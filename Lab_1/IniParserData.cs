@@ -36,8 +36,10 @@ namespace Lab_1
                 throw new FormatException($"File has wrong format: '{sectionName}' section was already declared");
         }
 
-        public T TryGet<T>(string sectionName, string fieldName)
+        public bool TryGet<T>(string sectionName, string fieldName, out T result)
         {
+            result = default;
+            
             try
             {
                 var valueString = _data[sectionName][fieldName];
@@ -45,6 +47,45 @@ namespace Lab_1
                 if (typeof(T) == typeof(double) || typeof(T) == typeof(decimal) || typeof(T) == typeof(float))
                     valueString = valueString.Replace('.', ',');
 
+                result = (T) Convert.ChangeType(valueString, typeof(T));
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
+            
+            return true;
+        }
+
+        public bool TryGetInt(string sectionName, string fieldName, out int result) => TryGet(sectionName, fieldName, out result);
+        public bool TryGetDouble(string sectionName, string fieldName, out double result) => TryGet(sectionName, fieldName, out result);
+        public bool TryGetString(string sectionName, string fieldName, out string result)
+        {
+            result = "";
+            if (!_data[sectionName].ContainsKey(fieldName)) return false;
+            result = _data[sectionName][fieldName];
+            return true;
+
+        }
+
+        /*
+        public T Get<T>(string sectionName, string fieldName)
+        {
+            try
+            {
+                var valueString = _data[sectionName][fieldName];
+        
+                if (typeof(T) == typeof(double) || typeof(T) == typeof(decimal) || typeof(T) == typeof(float))
+                    valueString = valueString.Replace('.', ',');
+        
                 return (T) Convert.ChangeType(valueString, typeof(T));
             }
             catch (KeyNotFoundException)
@@ -56,9 +97,10 @@ namespace Lab_1
                 throw new FormatException($"The field '{fieldName}' value in the section '{sectionName}' cannot be converted to {typeof(T)}");
             }
         }
-
-        public int TryGetInt(string sectionName, string fieldName) => TryGet<int>(sectionName, fieldName);
-        public double TryGetDouble(string sectionName, string fieldName) => TryGet<double>(sectionName, fieldName);
-        public string TryGetString(string sectionName, string fieldName) => _data[sectionName][fieldName];
+        
+        public int GetInt(string sectionName, string fieldName) => Get<int>(sectionName, fieldName);
+        public double GetDouble(string sectionName, string fieldName) => Get<double>(sectionName, fieldName);
+        public string GetString(string sectionName, string fieldName) => _data[sectionName][fieldName];
+        */
     }
 }
