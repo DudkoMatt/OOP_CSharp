@@ -44,10 +44,34 @@ namespace Lab_1
             {
                 var valueString = _data[sectionName][fieldName];
 
+                // ToDO: Локализация
                 if (typeof(T) == typeof(double) || typeof(T) == typeof(decimal) || typeof(T) == typeof(float))
                     valueString = valueString.Replace('.', ',');
 
                 result = (T) Convert.ChangeType(valueString, typeof(T));
+
+                // Conversion examples
+                
+                // object v = "Hello";
+                // object d = "12.1";
+                // var s = v as string;
+                // var z = d as string;
+                //
+                // switch (d)
+                // {
+                //     case double y:
+                //         Console.WriteLine("");
+                //         break;
+                // }
+                //
+                // if (d is double x)
+                // {
+                //     
+                // }
+                // else
+                // {
+                //     
+                // }
             }
             catch (KeyNotFoundException)
             {
