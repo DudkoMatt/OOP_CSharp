@@ -2,7 +2,7 @@
 
 namespace Lab_2
 {
-    class ProductStorage
+    public class ProductStorage
     {
         private Dictionary<ulong, ulong> _productsAmount;  // id - amount
         private Dictionary<ulong, ulong> _productsPrice;   // id - price
@@ -13,51 +13,45 @@ namespace Lab_2
             _productsPrice  = new Dictionary<ulong, ulong>();
         }
 
-        public void AddProduct(ulong id, ulong amount, ulong price)
+        public void AddProduct(ProductRecord record, ulong price)
         {
-            SetProductPrice(id, price);
-            if (_productsAmount.ContainsKey(id))
-                _productsAmount[id] += amount;
+            SetProductPrice(record.ProductId, price);
+            AddProduct(record);
+        }  // noexcept
+        
+        public void AddProduct(ProductRecord record)
+        {
+            if (_productsAmount.ContainsKey(record.ProductId))
+                _productsAmount[record.ProductId] += record.Amount;
             else
-                _productsAmount[id] = amount;
-        }
+                _productsAmount[record.ProductId] = record.Amount;
+        }  // noexcept
 
-        public void SetProductPrice(ulong id, ulong price) => _productsPrice[id] = price;
+        public void SetProductPrice(ulong id, ulong price) => _productsPrice[id] = price;  // noexcept
         
-        public bool TryGetProductPrice(ulong id, out ulong price)
+        public ulong GetProductPrice(ulong id)
         {
-            price = 0;
-            if (!_productsPrice.ContainsKey(id)) return false;
-            price = _productsPrice[id];
-            return true;
-
-        }
-
-        public ulong GetAmountOfProduct(ulong id) => _productsAmount.ContainsKey(id) ? _productsAmount[id] : 0;
-
-        public IEnumerable<ulong> GetListOfProducts() => _productsAmount.Keys;
-
-        public ulong GetPriceOfProduct(ulong id) => _productsPrice.ContainsKey(id) ? _productsPrice[id] : 0;
-
-        public bool TryBuyProduct(ulong id, ulong amount, out ulong price)
-        {
-            price = 0;
-            if (!_productsAmount.ContainsKey(id) || amount > _productsAmount[id]) return false;
-            price = _productsPrice[id] * amount;
-            _productsAmount[id] -= amount;
-            return true;
-        }
+            if (!_productsPrice.ContainsKey(id)) throw new ProductPriceNotSetException();
+            return _productsPrice[id];
+        }  // ProductPriceNotSetException
         
-        public void BuyProduct(ulong id, ulong amount, out ulong price)
+        public ulong GetProductAmount(ulong id)
         {
-            price = _productsPrice[id] * amount;
-            _productsAmount[id] -= amount;
-        }
+            if (!_productsAmount.ContainsKey(id)) throw new ProductAmountNotSetException();
+            return _productsAmount[id];
+        }  // ProductAmountNotSetException
 
-        // public void RemoveAllProduct(ulong id)
-        // {
-        //     if (_productsAmount.ContainsKey(id))
-        //         _productsAmount.Remove(id);
-        // }
+        public IEnumerable<ulong> GetProductsList() => _productsAmount.Keys;  // noexcept
+        
+        public void BuyProduct(ProductRecord record, out ulong price)
+        {
+            if (!_productsAmount.ContainsKey(record.ProductId))
+                throw new ProductAmountNotSetException();    
+            if (record.Amount > _productsAmount[record.ProductId])
+                throw new ProductAmountNotEnoughException();
+            
+            price = _productsPrice[record.ProductId] * record.Amount;
+            _productsAmount[record.ProductId] -= record.Amount;
+        }  // ProductAmountNotSetException, ProductAmountNotEnoughException
     }
 }

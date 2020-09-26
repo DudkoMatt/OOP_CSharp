@@ -1,10 +1,10 @@
 ﻿namespace Lab_2
 {
-    class Product
+    public class Product
     {
         private static ulong _nextTaskId = 1000;
         public readonly ulong Id;
-        public string Name;
+        public readonly string Name;
 
         public Product(string name)
         {

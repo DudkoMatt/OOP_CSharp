@@ -3,7 +3,7 @@
 namespace Lab_2
 {
     // Global. To get info about products
-    class ProductDatabase
+    public class ProductDatabase
     {
         private Dictionary<ulong, Product> _products;  // id - product
 
@@ -19,6 +19,6 @@ namespace Lab_2
             return tmp.Id;
         }
 
-        public Product GetProduct(ulong id) => _products[id];
+        public Product GetProduct(ulong id) => _products[id];  // KeyNotFoundException
     }
 }

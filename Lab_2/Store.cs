@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Lab_2
 {
-    class Store
+    public class Store
     {
         private static ulong _nextStoreId = 1000;
         public readonly ulong Id;
-        public string Name;
-        public string Address;
+        public readonly string Name;
+        public readonly string Address;
 
         // Products info
         private ProductStorage _storage;
@@ -23,87 +23,97 @@ namespace Lab_2
 
         public void AddProduct(ulong id, ulong amount, ulong price)
         {
-            _storage.AddProduct(id, amount, price);
-        }
+            _storage.AddProduct(new ProductRecord(id, amount), price);
+        }  // noexcept
+        
+        public void AddProduct(ProductRecord record)
+        {
+            _storage.AddProduct(record);
+        }  // noexcept
+        
+        public void AddProduct(ProductRecord record, ulong price)
+        {
+            _storage.AddProduct(record, price);
+        }  // noexcept
 
         public void SetProductPrice(ulong id, ulong price)
         {
             _storage.SetProductPrice(id, price);
-        }
-
-        public bool TryGetProductPrice(ulong id, out ulong price)
-        {
-            return _storage.TryGetProductPrice(id, out price);
-        }
+        }  // noexcept
 
         public ulong GetProductPrice(ulong id)
         {
-            return TryGetProductPrice(id, out var price) ? price : 0;
-        }
-
-        public bool TryBuyProduct(ulong id, ulong amount, out ulong price)
-        {
-            return _storage.TryBuyProduct(id, amount, out price);
-        }
+            return _storage.GetProductPrice(id);
+        }  // ProductPriceNotSetException
         
-        public ulong BuyProduct(ulong id, ulong amount)
+        public ulong BuyProduct(ProductRecord record)
         {
-            return _storage.TryBuyProduct(id, amount, out var price) ? price : 0;
-        }
+            _storage.BuyProduct(record, out var price);
+            return price;
+        }  // ProductAmountNotSetException, ProductAmountNotEnoughException
         
-        public bool TryBuyProducts(List<KeyValuePair<ulong, ulong>> listOfProducts, out ulong price) // id - amount
+        public void CheckAvailability(List<ProductRecord> listOfProducts)
+        {
+            foreach (var record in listOfProducts)
+            {
+                _storage.GetProductPrice(record.ProductId);  // ProductPriceNotSetException
+                if (_storage.GetProductAmount(record.ProductId) < record.Amount)  // ProductAmountNotSetException
+                {
+                    throw new ProductAmountNotEnoughException();
+                }
+            }
+        }  // ProductPriceNotSetException, ProductAmountNotSetException, ProductAmountNotEnoughException
+        
+        public void BuyProductList(List<ProductRecord> listOfProducts, out ulong price)
         {
             price = 0;
-            if (!CheckAvailability(listOfProducts)) return false;
+            CheckAvailability(listOfProducts);
             
-            foreach (var (id, amount) in listOfProducts)
+            foreach (var record in listOfProducts)
             {
-                price += BuyProduct(id, amount);
+                price += BuyProduct(record);
             }
+        }  // ProductPriceNotSetException, ProductAmountNotSetException, ProductAmountNotEnoughException
 
-            return true;
-        }
-
-        public bool TryCalculateTotalCostOfProducts(List<KeyValuePair<ulong, ulong>> listOfProducts, out ulong price)
+        public ulong CalculateTotalCostOfProducts(List<ProductRecord> listOfProducts)
         {
-            price = 0;
-            if (!CheckAvailability(listOfProducts)) return false;
+            var price = 0ul;
+            CheckAvailability(listOfProducts);
 
-            foreach (var (productId, amount) in listOfProducts)
+            foreach (var record in listOfProducts)
             {
-                price += _storage.GetPriceOfProduct(productId) * amount;
+                price += _storage.GetProductPrice(record.ProductId) * record.Amount;
             }
             
-            return true;
-        }
+            return price;
+        }  // ProductPriceNotSetException, ProductAmountNotSetException, ProductAmountNotEnoughException
 
-        public bool CheckAvailability(List<KeyValuePair<ulong, ulong>> listOfProducts)
+        public List<ProductRecord> ListOfProductsOnMaxPrice(ulong maxPrice, out ulong moneyRemaining)
         {
-            foreach (var (productId, amount) in listOfProducts)
+            var list = new List<ProductRecord>();
+            foreach (var productId in _storage.GetProductsList())
             {
-                if (_storage.GetAmountOfProduct(productId) < amount)
-                    return false;
-            }
-            return true;
-        }
-        
-        public List<KeyValuePair<ulong, ulong>> ListOfProductsOnMaxPrice(ulong maxPrice, out ulong moneyRemaining)
-        {
-            var list = new List<KeyValuePair<ulong, ulong>>();
-            foreach (var productId in _storage.GetListOfProducts())
-            {
-                if (_storage.GetPriceOfProduct(productId) == 0)
+                ulong price, amount;
+
+                try
+                {
+                    price = _storage.GetProductPrice(productId);
+                    amount = _storage.GetProductAmount(productId);
+                }
+                catch (ProductException)
+                {
                     continue;
-                
-                var k = Math.Min(maxPrice / _storage.GetPriceOfProduct(productId), _storage.GetAmountOfProduct(productId));
+                }
+
+                var k = Math.Min(maxPrice / price, amount);
                 if (k == 0) continue;
 
-                maxPrice -= _storage.GetPriceOfProduct(productId) * k;
-                list.Add(new KeyValuePair<ulong, ulong>(productId, k));
+                maxPrice -= price * k;
+                list.Add(new ProductRecord(productId, k));
             }
 
             moneyRemaining = maxPrice;
             return list;
-        }
+        }  // noexcept
     }
 }

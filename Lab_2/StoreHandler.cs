@@ -2,55 +2,77 @@
 
 namespace Lab_2
 {
-    class StoreHandler
+    public class StoreHandler
     {
-        private Dictionary<ulong, Store> _stores;
-
-        public StoreHandler()
-        {
-            _stores = new Dictionary<ulong, Store>();
-        }
-
-        public Store GetStore(ulong id) => _stores[id];
+        private StoreDatabase _database;
         
-        public ulong CreateStore(string name, string address)
+        public StoreHandler(StoreDatabase database)
         {
-            var tmp = new Store(name, address);
-            _stores.Add(tmp.Id, tmp);
-            return tmp.Id;
+            _database = database;
         }
-
-        public bool TryFindMinPriceOfProduct(ulong id, out ulong minPrice, out ulong foundStoreId)
+        
+        public Store FindStoreWithMinPriceOfProduct(ulong id, out ulong minPrice)
         {
-            foundStoreId = 0;
+            Store foundStore = null;
             minPrice = ulong.MaxValue;
-            foreach (var (storeId, store) in _stores)
+            foreach (var store in _database.GetStoresList())
             {
-                if (store.TryGetProductPrice(id, out var price) && price < minPrice)
+                ulong price;
+                
+                try
+                {
+                    price = store.GetProductPrice(id);
+                }
+                catch (ProductPriceNotSetException)
+                {
+                    continue;
+                }
+
+                if (price < minPrice)
                 {
                     minPrice = price;
-                    foundStoreId = storeId;
+                    foundStore = store;
                 }
             }
-
-            return foundStoreId != 0;
-        }
-
-        public bool TryFindMinPriceOfProductList(List<KeyValuePair<ulong, ulong>> listOfProducts, out ulong foundStoreId, out ulong minPrice)
+            
+            if (foundStore == null) throw new StoreNotFoundException();
+            
+            return foundStore;
+        }  // StoreNotFoundException
+        
+        public Store FindStoreWithMinPriceOfProductList(List<ProductRecord> listOfProducts, out ulong minPrice)
         {
             minPrice = ulong.MaxValue;
-            foundStoreId = 0;
+            Store foundStore = null;
 
-            foreach (var (storeId, store) in _stores)
+            foreach (var store in _database.GetStoresList())
             {
-                if (store.TryCalculateTotalCostOfProducts(listOfProducts, out var price) && price < minPrice)
+                ulong price;
+
+                try
+                {
+                    price = store.CalculateTotalCostOfProducts(listOfProducts);
+                }
+                catch (ProductException)
+                {
+                    continue;
+                }
+                
+                if (price < minPrice)
                 {
                     minPrice = price;
-                    foundStoreId = storeId;
+                    foundStore = store;
                 }
             }
+            
+            if (foundStore == null) throw new StoreNotFoundException();
+            
+            return foundStore;
+        }  // StoreNotFoundException
 
-            return foundStoreId != 0;
-        }
+        public void BuyProductListInStore(ulong id, List<ProductRecord> listOfProducts, out ulong totalPrice)
+        {
+            _database.GetStore(id).BuyProductList(listOfProducts, out totalPrice);
+        }  // KeyNotFoundException, ProductPriceNotSetException, ProductAmountNotSetException, ProductAmountNotEnoughException
     }
 }
