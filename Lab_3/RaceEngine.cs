@@ -20,6 +20,8 @@ namespace Lab_3
 
         public ulong Run(double distance)
         {
+            if (_vehicles.Count == 0) throw new ZeroRegisteredVehiclesException();
+            
             ulong winnerId = 0;
             var minTime = double.MaxValue;
 
