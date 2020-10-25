@@ -11,11 +11,8 @@
             RaceEngine = new RaceEngine();
         }
 
-        public abstract bool CheckVehicleType(Vehicle vehicle);
-
         protected ulong RegisterVehicle(Vehicle vehicle)
         {
-            if (!CheckVehicleType(vehicle)) throw new VehicleTypeInvalidException();
             return RaceEngine.RegisterVehicle(vehicle);
         }
 
