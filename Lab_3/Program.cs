@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Lab_3
 {
-    class Program
+    public class Program
     {
-        static void Main()
+        public static void Main()
         {
             var groundVehicles = new List<Vehicle>
             {
@@ -27,20 +27,20 @@ namespace Lab_3
             allVehicles.AddRange(airVehicles);
 
             // Creating race
-            var airRace = new RaceEngine(new AirRace(6000));
+            var airRace = new AirRace(6000);
             
-            var listGroundRaces = new List<RaceEngine>
+            var listGroundRaces = new List<Race>
             {
-                new RaceEngine(new GroundRace(10)),
-                new RaceEngine(new GroundRace(100)),
-                new RaceEngine(new GroundRace(500)),
-                new RaceEngine(new GroundRace(700)),
-                new RaceEngine(new GroundRace(1000)),
-                new RaceEngine(new GroundRace(5000)),
-                new RaceEngine(new GroundRace(10000)),
+                new GroundRace(10),
+                new GroundRace(100),
+                new GroundRace(500),
+                new GroundRace(700),
+                new GroundRace(1000),
+                new GroundRace(5000),
+                new GroundRace(10000),
             };
             
-            var generalRace = new RaceEngine(new GeneralRace(10000));
+            var generalRace = new GeneralRace(10000);
             
             // Registering vehicles
             // Example: trying to add wrong vehicle type to race:
@@ -48,7 +48,7 @@ namespace Lab_3
             {
                 airRace.RegisterVehicle(groundVehicles[0]);
             }
-            catch (ArgumentException e)
+            catch (VehicleTypeInvalidException e)
             {
                 Console.WriteLine("---------------------------------------------------------------");
                 Console.WriteLine(e.Message);
