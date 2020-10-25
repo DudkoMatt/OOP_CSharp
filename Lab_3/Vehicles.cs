@@ -16,11 +16,11 @@
     public abstract class GroundVehicle : Vehicle
     {
         protected double _restInterval;
-        protected int _numberOfRest = 1;
 
-        public abstract double RestDuration { get; }
+        public abstract double GetRestDuration { get; }
+        public void TakeRest() => NumberOfRest++;
         public double RestInterval => _restInterval;
-        public int NumberOfRest => _numberOfRest;
+        public int NumberOfRest { get; protected set; } = 1;
 
         protected GroundVehicle(double speed, double restInterval) : base(speed)
         {
@@ -43,7 +43,8 @@
                 else
                 {
                     calculatedTime += RestInterval;
-                    calculatedTime += RestDuration;
+                    calculatedTime += GetRestDuration;
+                    TakeRest();
                     distanceRemaining -= maxDistance;
                 }
             }
@@ -57,7 +58,7 @@
         public BactrianCamel() : base(10, 30)
         {}
 
-        public override double RestDuration => _numberOfRest++ == 1 ? 5 : 8;
+        public override double GetRestDuration => NumberOfRest == 1 ? 5 : 8;
     }
 
     public class FastCamel : GroundVehicle
@@ -65,11 +66,11 @@
         public FastCamel() : base(40, 10)
         {}
         
-        public override double RestDuration
+        public override double GetRestDuration
         {
             get
             {
-                return _numberOfRest++ switch
+                return NumberOfRest switch
                 {
                     1 => 5,
                     2 => 6.5,
@@ -84,7 +85,7 @@
         public Centaur() : base(15, 8)
         {}
 
-        public override double RestDuration => 2;
+        public override double GetRestDuration => 2;
     }
 
     public class SpeedBoots : GroundVehicle
@@ -92,7 +93,7 @@
         public SpeedBoots() : base(6, 60)
         {}
 
-        public override double RestDuration => _numberOfRest++ == 1 ? 10 : 5;
+        public override double GetRestDuration => NumberOfRest == 1 ? 10 : 5;
     }
 
     public abstract class AirVehicle : Vehicle
