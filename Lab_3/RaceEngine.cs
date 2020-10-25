@@ -35,38 +35,6 @@ namespace Lab_3
             return _nextVehicleId++;
         }
 
-        private double _CalculateTime(Vehicle vehicle)
-        {
-            double calculatedTime = 0;
-            var distanceRemaining = _race.Distance;
-            switch (vehicle)
-            {
-                case GroundVehicle groundVehicle:
-                    while (distanceRemaining > 0)
-                    {
-                        var maxDistance = groundVehicle.Speed * groundVehicle.RestInterval;
-                        if (maxDistance > distanceRemaining)
-                        {
-                            calculatedTime += distanceRemaining / groundVehicle.Speed;
-                            distanceRemaining = 0;
-                        }
-                        else
-                        {
-                            calculatedTime += groundVehicle.RestInterval;
-                            calculatedTime += groundVehicle.RestDuration;
-                            distanceRemaining -= maxDistance;
-                        }
-                    }
-                    break;
-                case AirVehicle airVehicle:
-                    distanceRemaining = distanceRemaining * (1 - airVehicle.DistanceReducer(distanceRemaining) / 100);
-                    calculatedTime = distanceRemaining / airVehicle.Speed;
-                    break;
-            }
-
-            return calculatedTime;
-        }
-        
         public ulong Run()
         {
             ulong winnerId = 0;
@@ -74,7 +42,7 @@ namespace Lab_3
 
             foreach (var (vehicleId, vehicle) in _vehicles)
             {
-                var calculateTime = _CalculateTime(vehicle);
+                var calculateTime = vehicle.CalculateTime(_race.Distance);
                 if (calculateTime < minTime)
                 {
                     winnerId = vehicleId;

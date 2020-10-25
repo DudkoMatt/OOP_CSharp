@@ -9,6 +9,8 @@
         {
             _speed = speed;
         }
+
+        public abstract double CalculateTime(double distance);
     }
 
     public abstract class GroundVehicle : Vehicle
@@ -23,6 +25,30 @@
         protected GroundVehicle(double speed, double restInterval) : base(speed)
         {
             _restInterval = restInterval;
+        }
+        
+        public override double CalculateTime(double distance)
+        {
+            double calculatedTime = 0;
+            var distanceRemaining = distance;
+
+            while (distanceRemaining > 0)
+            {
+                var maxDistance = Speed * RestInterval;
+                if (maxDistance > distanceRemaining)
+                {
+                    calculatedTime += distanceRemaining / Speed;
+                    distanceRemaining = 0;
+                }
+                else
+                {
+                    calculatedTime += RestInterval;
+                    calculatedTime += RestDuration;
+                    distanceRemaining -= maxDistance;
+                }
+            }
+
+            return calculatedTime;
         }
     }
 
@@ -75,6 +101,11 @@
         {}
 
         public abstract double DistanceReducer(double distance);
+        
+        public override double CalculateTime(double distance)
+        {
+            return distance * (1 - DistanceReducer(distance) / 100) / Speed;
+        }
     }
 
     public class Carpet : AirVehicle
