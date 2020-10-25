@@ -7,7 +7,7 @@ namespace Lab_3
     {
         public static void Main()
         {
-            var groundVehicles = new List<Vehicle>
+            var groundVehicles = new List<GroundVehicle>
             {
                 new BactrianCamel(),
                 new FastCamel(),
@@ -15,7 +15,7 @@ namespace Lab_3
                 new SpeedBoots()
             };
             
-            var airVehicles = new List<Vehicle>
+            var airVehicles = new List<AirVehicle>
             {
                 new Carpet(),
                 new Mortar(),
@@ -29,7 +29,7 @@ namespace Lab_3
             // Creating race
             var airRace = new AirRace(6000);
             
-            var listGroundRaces = new List<Race>
+            var listGroundRaces = new List<GroundRace>
             {
                 new GroundRace(10),
                 new GroundRace(100),
@@ -43,17 +43,11 @@ namespace Lab_3
             var generalRace = new GeneralRace(10000);
             
             // Registering vehicles
+            
             // Example: trying to add wrong vehicle type to race:
-            try
-            {
-                airRace.RegisterVehicle(groundVehicles[0]);
-            }
-            catch (VehicleTypeInvalidException e)
-            {
-                Console.WriteLine("---------------------------------------------------------------");
-                Console.WriteLine(e.Message);
-                Console.WriteLine("---------------------------------------------------------------");
-            }
+            // This won't compile:
+            // airRace.RegisterVehicle(groundVehicles[0]);
+
             
             // Adding vehicles
             foreach (var vehicle in airVehicles)
@@ -64,7 +58,7 @@ namespace Lab_3
             
             foreach (var groundRace in listGroundRaces)
             {
-                foreach (var vehicle in groundVehicles)
+                foreach (GroundVehicle vehicle in groundVehicles)
                 {
                     groundRace.RegisterVehicle(vehicle);                    
                 }
