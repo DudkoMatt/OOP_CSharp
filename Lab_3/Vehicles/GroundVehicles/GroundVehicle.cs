@@ -4,6 +4,7 @@
     {
         public abstract double GetRestDuration { get; }
         public void TakeRest() => NumberOfRest++;
+        public void ResetNumberOfRest() => NumberOfRest = 1;
         public double RestInterval { get; }
 
         public int NumberOfRest { get; protected set; } = 1;
@@ -35,6 +36,7 @@
                 }
             }
 
+            ResetNumberOfRest();
             return calculatedTime;
         }
     }
