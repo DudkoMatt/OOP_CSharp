@@ -2,12 +2,11 @@
 {
     public abstract class Vehicle
     {
-        protected double _speed;
-        public double Speed => _speed;
+        public double Speed { get; }
 
         protected Vehicle(double speed)
         {
-            _speed = speed;
+            Speed = speed;
         }
 
         public abstract double CalculateTime(double distance);
@@ -15,16 +14,15 @@
 
     public abstract class GroundVehicle : Vehicle
     {
-        protected double _restInterval;
-
         public abstract double GetRestDuration { get; }
         public void TakeRest() => NumberOfRest++;
-        public double RestInterval => _restInterval;
+        public double RestInterval { get; }
+
         public int NumberOfRest { get; protected set; } = 1;
 
         protected GroundVehicle(double speed, double restInterval) : base(speed)
         {
-            _restInterval = restInterval;
+            RestInterval = restInterval;
         }
         
         public override double CalculateTime(double distance)
