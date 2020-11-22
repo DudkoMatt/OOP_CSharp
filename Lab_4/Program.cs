@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Lab_4
@@ -118,6 +119,101 @@ namespace Lab_4
             
             // Кейс 4
             
+            DateTimeProvider.UseCustomDate = true;
+            
+            Console.WriteLine();
+            Console.WriteLine("Кейс 4");
+            Console.WriteLine("------\n");
+            
+            var restoreManager4 = new RestoreManager();
+            restoreManager4.AddObjectForBackupList("c.txt");
+            restoreManager4.AddObjectForBackupList("d.txt");
+            
+            DateTimeProvider.CustomDate = new DateTime(2020,11,20);
+            restoreManager4.CreateFullBackup();
+            DateTimeProvider.CustomDate = new DateTime(2020,11,21);
+            restoreManager4.CreateFullBackup();
+            DateTimeProvider.CustomDate = new DateTime(2020,11,22);
+            restoreManager4.CreateFullBackup();
+            
+            Console.WriteLine("Change files and press enter...");
+            Console.ReadLine();
+            DateTimeProvider.CustomDate = new DateTime(2020,11,23);
+            restoreManager4.CreateIncrementalBackup();
+
+            restoreManager4.PrintHistory();
+            
+            Console.WriteLine("------------------ Cleaning --------------------------------\n");
+
+            var algorithmsList = new List<ICleaningAlgorithm>()
+            {
+                new CountCleaningAlgorithm(2),
+                new DateCleaningAlgorithm(new DateTime(2020, 11, 21))
+            };
+            
+            restoreManager4.CleaningAlgorithm = new HybridCleaningAlgorithm(algorithmsList, false);
+            Console.WriteLine($"Count of points after cleaning: {restoreManager4.CountLeftPoints()}\n");
+            
+            try
+            {
+                restoreManager4.Clean();
+            }
+            catch (MorePointsLeftException)
+            {
+                Console.WriteLine("Warning: more points are left");
+                Console.WriteLine();
+            }
+            
+            restoreManager4.PrintHistory();
+
+            DateTimeProvider.UseCustomDate = false;
+            
+            
+            
+            // ---------------------------------------------------------------------------------------------------------
+            
+            // Кейс 5
+            
+            DateTimeProvider.UseCustomDate = true;
+            
+            Console.WriteLine();
+            Console.WriteLine("Кейс 5");
+            Console.WriteLine("------\n");
+            
+            var restoreManager5 = new RestoreManager();
+            restoreManager5.AddObjectForBackupList("c.txt");
+            restoreManager5.AddObjectForBackupList("d.txt");
+            
+            DateTimeProvider.CustomDate = new DateTime(2020,11,20);
+            restoreManager5.CreateFullBackup();
+            DateTimeProvider.CustomDate = new DateTime(2020,11,21);
+            restoreManager5.CreateFullBackup();
+            DateTimeProvider.CustomDate = new DateTime(2020,11,22);
+            restoreManager5.CreateFullBackup();
+            DateTimeProvider.CustomDate = new DateTime(2020,11,23);
+            restoreManager5.CreateFullBackup();
+
+            
+            restoreManager5.PrintHistory();
+            
+            Console.WriteLine("------------------ Cleaning --------------------------------\n");
+
+            restoreManager5.CleaningAlgorithm = new HybridCleaningAlgorithm(algorithmsList, true);
+            Console.WriteLine($"Count of points after cleaning: {restoreManager5.CountLeftPoints()}\n");
+            
+            try
+            {
+                restoreManager5.Clean();
+            }
+            catch (MorePointsLeftException)
+            {
+                Console.WriteLine("Warning: more points are left");
+                Console.WriteLine();
+            }
+            
+            restoreManager5.PrintHistory();
+
+            DateTimeProvider.UseCustomDate = false;
         }
     }
 
