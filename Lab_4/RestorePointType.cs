@@ -31,20 +31,4 @@ namespace Lab_4
             return allSize;
         }
     }
-    
-    public class FullBackupPoint : RestorePointType
-    {
-        public FullBackupPoint(RestorePointType previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate) : base(previousPoint, info, creationDate)
-        {
-            
-        }
-    }
-
-    public class IncrementalBackupPoint : RestorePointType
-    {
-        public IncrementalBackupPoint(RestorePointType previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate) : base(previousPoint, info, creationDate)
-        {
-            
-        }
-    }
 }
