@@ -14,8 +14,7 @@
             areMorePointsLeft = false;
             var k = LastNPoints - 1;
             var point = lastPoint;
-
-            // ToDO: prevPoint и point
+            
             while (point != null && (k > 0 || point is IncrementalBackupPoint))
             {
                 point = point.PreviousPoint;
