@@ -13,6 +13,7 @@
         public abstract void RestoreFile(string filePath);
     }
     
+    // Данный алгоритм сохраняет файлы в отдельную папку
     public class SeparateStoringAlgorithm : BackupStoringAlgorithm
     {
         public SeparateStoringAlgorithm(string backupPath = ".") : base(backupPath)
@@ -30,6 +31,7 @@
         }
     }
     
+    // Данный алгоритм сохраняет файлы в архив
     public class CommonStoringAlgorithm : BackupStoringAlgorithm
     {
         public CommonStoringAlgorithm(string backupPath = ".") : base(backupPath)
