@@ -67,7 +67,7 @@ namespace Lab_4
             var point = lastPoint;
             RestorePointType prevPoint = null;
             
-            while (point != null && (point.CreationDate > Date || point is IncrementalBackupPoint))
+            while (point != null && (point.CreationDate >= Date || point is IncrementalBackupPoint))
             {
                 prevPoint = point;
                 point = point.PreviousPoint;
@@ -84,7 +84,7 @@ namespace Lab_4
             long k = 0;
             var point = lastPoint;
 
-            while (point != null && (point.CreationDate > Date || point is IncrementalBackupPoint))
+            while (point != null && (point.CreationDate >= Date || point is IncrementalBackupPoint))
             {
                 point = point.PreviousPoint;
                 k++;
