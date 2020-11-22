@@ -5,7 +5,7 @@ namespace Lab_4
 {
     public interface ICleaningAlgorithm
     {
-        public RestorePointType Clean(RestorePointType lastPoint);  // Очистка, возвращается последняя точка
+        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft);  // Очистка, возвращается последняя точка
         public long CountLeftPoints(RestorePointType lastPoint);  // Подсчет без удаления
     }
 
@@ -18,8 +18,9 @@ namespace Lab_4
             LastNPoints = lastNPoints;
         }
 
-        public RestorePointType Clean(RestorePointType lastPoint)
+        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft)
         {
+            areMorePointsLeft = false;
             var k = LastNPoints - 1;
             var point = lastPoint;
 
@@ -31,6 +32,7 @@ namespace Lab_4
             }
 
             if (k <= 0 && point != null) point.PreviousPoint = null;
+            if (k < 0) areMorePointsLeft = true;
             return lastPoint;
         }
 
@@ -59,8 +61,9 @@ namespace Lab_4
             Date = date;
         }
         
-        public RestorePointType Clean(RestorePointType lastPoint)
+        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft)
         {
+            areMorePointsLeft = false;
             var point = lastPoint;
             RestorePointType prevPoint = null;
             
@@ -100,15 +103,16 @@ namespace Lab_4
             MaxSize = maxSizeInBytes;
         }
 
-        public RestorePointType Clean(RestorePointType lastPoint)
+        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft)
         {
+            areMorePointsLeft = false;
             var point = lastPoint;
             RestorePointType prevPoint = null;
             long currentSize = 0;
 
             while (point != null && (currentSize < MaxSize || point is IncrementalBackupPoint))
             {
-                if (point.Size() + currentSize <= MaxSize)
+                if (point.Size() + currentSize <= MaxSize || point is IncrementalBackupPoint)
                 {
                     currentSize += point.Size();
                     prevPoint = point;
@@ -121,6 +125,8 @@ namespace Lab_4
             if (prevPoint != null)
                 prevPoint.PreviousPoint = null;
 
+            if (currentSize > MaxSize) areMorePointsLeft = true;
+            
             return lastPoint;
         }
 
@@ -159,7 +165,7 @@ namespace Lab_4
             MinimumFlag = minimumFlag;
         }
 
-        public RestorePointType Clean(RestorePointType lastPoint)
+        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft)
         {
             ICleaningAlgorithm selectedAlgorithm = null;
             long numberOfLeftPoints = 0;
@@ -192,7 +198,7 @@ namespace Lab_4
             if (selectedAlgorithm == null)
                 throw new NullReferenceException("Nothing selected for cleaning algorithm");
             
-            return selectedAlgorithm.Clean(lastPoint);
+            return selectedAlgorithm.Clean(lastPoint, out areMorePointsLeft);
         }
 
         public long CountLeftPoints(RestorePointType lastPoint)

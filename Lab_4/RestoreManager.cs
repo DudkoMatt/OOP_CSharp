@@ -37,10 +37,11 @@ namespace Lab_4
             LastPoint = newPoint;
         }
 
-        // ToDO: обработка левых случаев -> возвращать string?
         public void Clean()
         {
-            LastPoint = CleaningAlgorithm.Clean(LastPoint);
+            LastPoint = CleaningAlgorithm.Clean(LastPoint, out var areMorePointsLeft);
+            if (areMorePointsLeft)
+                throw new MorePointsLeftException();
         }
         
         public long CountLeftPoints()
@@ -166,6 +167,23 @@ namespace Lab_4
         }
 
         public NoChangesForIncrementalBackupException(string message, Exception inner)
+            : base(message, inner)
+        {
+        }
+    }
+    
+    public class MorePointsLeftException : Exception
+    {
+        public MorePointsLeftException()
+        {
+        }
+
+        public MorePointsLeftException(string message)
+            : base(message)
+        {
+        }
+
+        public MorePointsLeftException(string message, Exception inner)
             : base(message, inner)
         {
         }

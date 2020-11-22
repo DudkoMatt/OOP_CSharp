@@ -25,8 +25,17 @@ namespace Lab_4
             
             restoreManager1.CleaningAlgorithm = new CountCleaningAlgorithm(1);
             Console.WriteLine($"Count of points after cleaning: {restoreManager1.CountLeftPoints()}\n");
-            restoreManager1.Clean();
-            
+
+            try
+            {
+                restoreManager1.Clean();
+            }
+            catch (MorePointsLeftException)
+            {
+                Console.WriteLine("Warning: more points are left");
+                Console.WriteLine();
+            }
+
             restoreManager1.PrintHistory();
             
             // ---------------------------------------------------------------------------------------------------------
@@ -50,7 +59,16 @@ namespace Lab_4
             
             restoreManager2.CleaningAlgorithm = new SizeCleaningAlgorithm(35);
             Console.WriteLine($"Count of points after cleaning: {restoreManager2.CountLeftPoints()}\n");
-            restoreManager2.Clean();
+            
+            try
+            {
+                restoreManager2.Clean();
+            }
+            catch (MorePointsLeftException)
+            {
+                Console.WriteLine("Warning: more points are left");
+                Console.WriteLine();
+            }
             
             restoreManager2.PrintHistory();
             
@@ -82,7 +100,16 @@ namespace Lab_4
             
             restoreManager3.CleaningAlgorithm = new CountCleaningAlgorithm(1);
             Console.WriteLine($"Count of points after cleaning: {restoreManager3.CountLeftPoints()}\n");
-            restoreManager3.Clean();
+            
+            try
+            {
+                restoreManager3.Clean();
+            }
+            catch (MorePointsLeftException)
+            {
+                Console.WriteLine("Warning: more points are left");
+                Console.WriteLine();
+            }
             
             restoreManager3.PrintHistory();
 
