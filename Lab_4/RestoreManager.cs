@@ -108,11 +108,11 @@ namespace Lab_4
             var list = new Dictionary<string, FileRestoreCopyInfo>();
             foreach (var filePath in objectsForBackup)
             {
-                list.Add(filePath, new FileRestoreCopyInfo(filePath, new FileInfo(filePath).Length, DateTime.Now, storingAlgorithm.BackupPath));
+                list.Add(filePath, new FileRestoreCopyInfo(filePath, new FileInfo(filePath).Length, DateTimeProvider.Now, storingAlgorithm.BackupPath));
                 // storingAlgorithm.CopyFile(filePath);
             }
             
-            return new FullBackupPoint(lastPoint, list, DateTime.Now);
+            return new FullBackupPoint(lastPoint, list, DateTimeProvider.Now);
         }
     }
 
@@ -144,14 +144,14 @@ namespace Lab_4
                     if (!point.Info.ContainsKey(filePath))
                         size = Math.Abs(size - point.Info[filePath].BackupSize);
                     
-                    list.Add(filePath,new FileRestoreCopyInfo(filePath, size, DateTime.Now, storingAlgorithm.BackupPath));
+                    list.Add(filePath,new FileRestoreCopyInfo(filePath, size, DateTimeProvider.Now, storingAlgorithm.BackupPath));
                     // storingAlgorithm.CopyFile(filePath);
                 }
             }
 
             if (list.Count == 0) return null;
             
-            return new IncrementalBackupPoint(lastPoint, list, DateTime.Now);
+            return new IncrementalBackupPoint(lastPoint, list, DateTimeProvider.Now);
         }
     }
     
