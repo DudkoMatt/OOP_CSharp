@@ -35,7 +35,7 @@ namespace Lab_4
                 }
             }
 
-            if (list.Count == 0) return null;
+            if (list.Count == 0) throw new NoChangesForIncrementalBackupException();
             
             return new IncrementalBackupPoint(lastPoint, list, DateTimeProvider.Now);
         }

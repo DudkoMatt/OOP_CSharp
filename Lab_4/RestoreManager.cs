@@ -32,9 +32,7 @@ namespace Lab_4
         public void CreateIncrementalBackup()
         {
             if (LastPoint == null) throw new IncrementalBackupCannotBeFirstException();
-            var newPoint = new IncrementalBackupCreator().CreateBackup(LastPoint, ObjectsForBackup, StoringAlgorithm);
-            if (newPoint == null) throw new NoChangesForIncrementalBackupException();
-            LastPoint = newPoint;
+            LastPoint = new IncrementalBackupCreator().CreateBackup(LastPoint, ObjectsForBackup, StoringAlgorithm);
         }
 
         public void Clean()
