@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Lab_4
 {
-    public class IncrementalBackupPoint : RestorePointType
+    public class IncrementalBackupPoint : RestorePoint
     {
-        public IncrementalBackupPoint(RestorePointType previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate) : base(previousPoint, info, creationDate)
+        public IncrementalBackupPoint(RestorePoint previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate) : base(previousPoint, info, creationDate)
         {
             
         }

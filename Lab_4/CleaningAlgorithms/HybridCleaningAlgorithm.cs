@@ -16,7 +16,7 @@ namespace Lab_4
             MinimumFlag = minimumFlag;
         }
 
-        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft)
+        public RestorePoint Clean(RestorePoint lastPoint, out bool areMorePointsLeft)
         {
             ICleaningAlgorithm selectedAlgorithm = null;
             long numberOfLeftPoints = 0;
@@ -52,7 +52,7 @@ namespace Lab_4
             return selectedAlgorithm.Clean(lastPoint, out areMorePointsLeft);
         }
 
-        public long CountLeftPoints(RestorePointType lastPoint)
+        public long CountLeftPoints(RestorePoint lastPoint)
         {
             long numberOfLeftPoints = 0;
             var isNumberSet = false;

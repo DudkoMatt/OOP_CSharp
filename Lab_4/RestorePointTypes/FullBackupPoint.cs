@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Lab_4
 {
-    public class FullBackupPoint : RestorePointType
+    public class FullBackupPoint : RestorePoint
     {
-        public FullBackupPoint(RestorePointType previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate) : base(previousPoint, info, creationDate)
+        public FullBackupPoint(RestorePoint previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate) : base(previousPoint, info, creationDate)
         {
             
         }

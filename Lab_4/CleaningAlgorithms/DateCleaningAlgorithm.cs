@@ -11,11 +11,11 @@ namespace Lab_4
             Date = date;
         }
         
-        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft)
+        public RestorePoint Clean(RestorePoint lastPoint, out bool areMorePointsLeft)
         {
             areMorePointsLeft = false;
             var point = lastPoint;
-            RestorePointType prevPoint = null;
+            RestorePoint prevPoint = null;
             
             while (point != null && (point.CreationDate >= Date || point is IncrementalBackupPoint))
             {
@@ -29,7 +29,7 @@ namespace Lab_4
             return lastPoint;
         }
 
-        public long CountLeftPoints(RestorePointType lastPoint)
+        public long CountLeftPoints(RestorePoint lastPoint)
         {
             long k = 0;
             var point = lastPoint;

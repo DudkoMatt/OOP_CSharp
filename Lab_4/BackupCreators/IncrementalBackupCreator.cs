@@ -6,7 +6,7 @@ namespace Lab_4
 {
     public class IncrementalBackupCreator : IBackupCreator
     {
-        public RestorePointType CreateBackup(RestorePointType lastPoint, List<string> objectsForBackup, BackupStoringAlgorithm storingAlgorithm)
+        public RestorePoint CreateBackup(RestorePoint lastPoint, List<string> objectsForBackup, BackupStoringAlgorithm storingAlgorithm)
         {
             var lastFullBackupPoint = lastPoint;
             while (lastFullBackupPoint != null && !(lastFullBackupPoint is FullBackupPoint))

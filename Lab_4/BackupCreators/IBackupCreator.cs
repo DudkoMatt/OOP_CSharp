@@ -4,6 +4,6 @@ namespace Lab_4
 {
     public interface IBackupCreator
     {
-        public RestorePointType CreateBackup(RestorePointType lastPoint, List<string> objectsForBackup, BackupStoringAlgorithm storingAlgorithm);
+        public RestorePoint CreateBackup(RestorePoint lastPoint, List<string> objectsForBackup, BackupStoringAlgorithm storingAlgorithm);
     }
 }

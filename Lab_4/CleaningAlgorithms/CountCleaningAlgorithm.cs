@@ -9,7 +9,8 @@
             LastNPoints = lastNPoints;
         }
 
-        public RestorePointType Clean(RestorePointType lastPoint, out bool areMorePointsLeft)
+        
+        public RestorePoint Clean(RestorePoint lastPoint, out bool areMorePointsLeft)
         {
             areMorePointsLeft = false;
             var k = LastNPoints - 1;
@@ -26,7 +27,7 @@
             return lastPoint;
         }
 
-        public long CountLeftPoints(RestorePointType lastPoint)
+        public long CountLeftPoints(RestorePoint lastPoint)
         {
             var k = LastNPoints - 1;
             var point = lastPoint;

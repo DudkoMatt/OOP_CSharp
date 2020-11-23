@@ -3,16 +3,16 @@ using System.Collections.Generic;
 
 namespace Lab_4
 {
-    public abstract class RestorePointType
+    public abstract class RestorePoint
     {
         private static ulong _nextId = 1;
         
-        public RestorePointType PreviousPoint;
+        public RestorePoint PreviousPoint;
         public readonly ulong Id;
         public readonly Dictionary<string, FileRestoreCopyInfo> Info;
         public readonly DateTime CreationDate;
         
-        public RestorePointType(RestorePointType previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate)
+        public RestorePoint(RestorePoint previousPoint, Dictionary<string, FileRestoreCopyInfo> info, DateTime creationDate)
         {
             PreviousPoint = previousPoint;
             Id = _nextId++;

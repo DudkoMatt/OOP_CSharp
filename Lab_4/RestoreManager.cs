@@ -7,7 +7,7 @@ namespace Lab_4
     public class RestoreManager
     {
         public List<string> ObjectsForBackup { get; }
-        public RestorePointType LastPoint { get; protected set; }
+        public RestorePoint LastPoint { get; protected set; }
         public BackupStoringAlgorithm StoringAlgorithm { get; set; }
         public ICleaningAlgorithm CleaningAlgorithm { get; set; }
         

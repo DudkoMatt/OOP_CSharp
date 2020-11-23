@@ -5,7 +5,7 @@ namespace Lab_4
 {
     public class FullBackupCreator : IBackupCreator
     {
-        public RestorePointType CreateBackup(RestorePointType lastPoint, List<string> objectsForBackup, BackupStoringAlgorithm storingAlgorithm)
+        public RestorePoint CreateBackup(RestorePoint lastPoint, List<string> objectsForBackup, BackupStoringAlgorithm storingAlgorithm)
         {
             var list = new Dictionary<string, FileRestoreCopyInfo>();
             foreach (var filePath in objectsForBackup)
