@@ -15,7 +15,7 @@ namespace Lab_5
         {
             var bank = _bankManager.GetBankById(bankId);
             var client = bank.GetClientById(clientId);
-            return new DepositAccount(client, bank, ExpirationDate, _bankManager[bankId].ConcreteDepositAccountPercentStrategy.Calculate(initDeposit));
+            return new DepositAccount(client, bank, ExpirationDate, _bankManager[bankId].CalculateDepositPercent(initDeposit));
         }
     }
 }
