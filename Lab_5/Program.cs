@@ -4,7 +4,7 @@ namespace Lab_5
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
             var bankManager = new BankManager();
             bankManager.RegisterBank(new Bank());  // bankId: 0
@@ -53,6 +53,7 @@ namespace Lab_5
             Console.WriteLine("After 30 days: ");
             Console.Write("Current amount of money: ");
             Console.WriteLine(bankManager[0].GetAccountById(0).Money);
+            Console.WriteLine();
             Console.WriteLine("------------------------------------------------------");
             
             // --------------------------------------------------------------------------------------------------------
@@ -78,6 +79,24 @@ namespace Lab_5
             Console.WriteLine("BankId: 1, AccountId: 0");
             Console.Write("Current amount of money: ");
             Console.WriteLine(bankManager[1].GetAccountById(0).Money);
+            Console.WriteLine();
+            Console.WriteLine("------------------------------------------------------");
+            
+            // --------------------------------------------------------------------------------------------------------
+            
+            Console.WriteLine();
+            Console.WriteLine("Testing canceling transaction:");
+            
+            bankManager.CancelTransaction(0, transferId);
+            
+            Console.WriteLine("BankId: 0, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[0].GetAccountById(0).Money);
+            Console.WriteLine("BankId: 1, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[1].GetAccountById(0).Money);
+            Console.WriteLine();
+            Console.WriteLine("------------------------------------------------------");
             
             // --------------------------------------------------------------------------------------------------------
             
