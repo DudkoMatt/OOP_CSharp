@@ -12,6 +12,9 @@ namespace Lab_5
         // ToDO
         public double DebitPercent { get; set; }
         public double SuspiciousAccountLimit { get; set; }
+        
+        public double TransferCommission { get; set; }
+        public double WithdrawCommission { get; set; }
 
         public readonly ulong Id;
         

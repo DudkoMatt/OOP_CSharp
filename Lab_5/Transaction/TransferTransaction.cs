@@ -11,7 +11,7 @@ namespace Lab_5
         {
             AccountTo = accountTo;
 
-            Account.Withdraw(Money);
+            Account.Withdraw(Money + Account.Bank.TransferCommission);
             AccountTo.Put(Money);
         }
 
