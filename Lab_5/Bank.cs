@@ -4,10 +4,10 @@ namespace Lab_5
 {
     public class Bank
     {
-        private static ulong _nextBankId = 0;
-        private ulong _nextClientId = 0;
-        private ulong _nextAccountId = 0;
-        private ulong _nextTransactionId = 0;
+        private static ulong _nextBankId;
+        private ulong _nextClientId;
+        private ulong _nextAccountId;
+        private ulong _nextTransactionId;
         
         public double SuspiciousAccountLimit { get; set; }
         

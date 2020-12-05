@@ -4,7 +4,7 @@ namespace Lab_5
 {
     public abstract class Transaction
     {
-        private static ulong _nextTransactionId = 0;
+        private static ulong _nextTransactionId;
         public readonly ulong TransactionId;
         public readonly double Money;
         public DateTime DateTime { get; private set; }
