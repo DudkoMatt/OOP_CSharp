@@ -5,8 +5,8 @@
         public Client Client { get; }
         public Bank Bank { get; }
         public double InterestPercent { get; set; }  // проценты в годовых
-        protected double Accumulation;  // накопления
-        protected double Money;
+        public double Accumulation { get; protected set; }  // накопления
+        public double Money { get; protected set; }
         
         protected Account(Client client, Bank bank, double interestPercent)
         {
@@ -29,7 +29,7 @@
 
         public void CalculateDailyAccumulation()
         {
-            Accumulation += Money * InterestPercent / 365;
+            Accumulation += Money * InterestPercent / 36500;
         }
 
         public void AddMonthAccumulation()
