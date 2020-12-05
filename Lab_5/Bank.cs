@@ -8,8 +8,7 @@ namespace Lab_5
         private ulong _nextClientId = 0;
         private ulong _nextAccountId = 0;
         private ulong _nextTransactionId = 0;
-
-        // ToDO
+        
         public double DebitPercent { get; set; }
         public double SuspiciousAccountLimit { get; set; }
         
