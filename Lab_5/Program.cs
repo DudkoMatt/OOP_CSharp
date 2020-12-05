@@ -13,17 +13,17 @@ namespace Lab_5
             // Паттерн: строитель
             var clientDirector = new ClientDirector(new ConsoleClientBuilder());
             
-            bankManager.GetBankById(0).AddClient(clientDirector.Make());  // clientId: 0
-            bankManager.GetBankById(0).AddClient(clientDirector.Make());  // clientId: 1
-            bankManager.GetBankById(1).AddClient(clientDirector.Make());  // clientId: 0
+            bankManager[0].AddClient(clientDirector.Make());  // clientId: 0
+            bankManager[0].AddClient(clientDirector.Make());  // clientId: 1
+            bankManager[1].AddClient(clientDirector.Make());  // clientId: 0
 
             var creditAccountCreator = new CreditAccountCreator(bankManager, 100);
             var debitAccountCreator = new DebitAccountCreator(bankManager);
             var depositAccountCreator = new DepositAccountCreator(bankManager, new DateTime(2020, 12, 20));
 
-            bankManager.GetBankById(0).AddAccountToClient(0, debitAccountCreator);
-            bankManager.GetBankById(0).AddAccountToClient(1, creditAccountCreator);
-            bankManager.GetBankById(1).AddAccountToClient(0, depositAccountCreator);
+            bankManager[0].AddAccountToClient(0, debitAccountCreator);
+            bankManager[0].AddAccountToClient(1, creditAccountCreator);
+            bankManager[1].AddAccountToClient(0, depositAccountCreator);
         }
     }
 }

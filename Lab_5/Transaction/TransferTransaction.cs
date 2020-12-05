@@ -15,7 +15,7 @@ namespace Lab_5
             AccountTo.Put(Money);
         }
 
-        public override void Cancel()
+        protected  override void _cancel()
         {
             AccountTo.Remove(Money);
             Account.Put(Money);

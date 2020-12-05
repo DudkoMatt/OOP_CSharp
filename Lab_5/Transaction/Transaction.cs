@@ -9,6 +9,7 @@ namespace Lab_5
         public readonly double Money;
         public DateTime DateTime { get; private set; }
         public Account Account { get; private set; }
+        public bool IsCanceled { get; private set; }
 
         protected Transaction(DateTime dateTime, Account account, double money)
         {
@@ -16,8 +17,15 @@ namespace Lab_5
             DateTime = dateTime;
             Account = account;
             Money = money;
+            IsCanceled = false;
         }
+
+        protected abstract void _cancel();
         
-        public abstract void Cancel();
+        public void Cancel()
+        {
+            if (IsCanceled) throw new TransactionAlreadyCanceledException();
+            IsCanceled = true;
+        }
     }
 }

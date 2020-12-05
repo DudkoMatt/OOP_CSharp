@@ -9,7 +9,7 @@ namespace Lab_5
             Account.Put(Money);
         }
 
-        public override void Cancel()
+        protected override void _cancel()
         {
             Account.Remove(Money);
         }

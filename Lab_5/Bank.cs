@@ -7,6 +7,7 @@ namespace Lab_5
         private static ulong _nextBankId = 0;
         private ulong _nextClientId = 0;
         private ulong _nextAccountId = 0;
+        private ulong _nextTransactionId = 0;
 
         // ToDO
         public double DebitPercent { get; set; }
@@ -17,14 +18,14 @@ namespace Lab_5
         private Dictionary<ulong, Account> Accounts { get; }
         private Dictionary<ulong, Client> Clients { get; }
         
-        private List<Transaction> Transactions { get; }
+        private Dictionary<ulong, Transaction> Transactions { get; }
 
         public Bank()
         {
             Id = _nextBankId++;
             Accounts = new Dictionary<ulong, Account>();
             Clients = new Dictionary<ulong, Client>();
-            Transactions = new List<Transaction>();
+            Transactions = new Dictionary<ulong, Transaction>();
         }
 
         public ulong AddClient(Client client)
@@ -66,5 +67,28 @@ namespace Lab_5
 
         public Account GetAccountById(ulong accountId) => Accounts[accountId];
         public Client GetClientById(ulong clientId) => Clients[clientId];
+
+        public ulong Withdraw(ulong accountId, double money)
+        {
+            Transactions.Add(_nextTransactionId, new WithdrawTransaction(DateTimeProvider.Now, Accounts[accountId], money));
+            return _nextTransactionId++;
+        }
+        
+        public ulong Put(ulong accountId, double money)
+        {
+            Transactions.Add(_nextTransactionId, new PutTransaction(DateTimeProvider.Now, Accounts[accountId], money));
+            return _nextTransactionId++;
+        }
+        
+        public ulong Transfer(ulong accountId, double money, ulong accountTo)
+        {
+            Transactions.Add(_nextTransactionId, new TransferTransaction(DateTimeProvider.Now, Accounts[accountId], money, Accounts[accountTo]));
+            return _nextTransactionId++;
+        }
+
+        public void CancelTransaction(ulong transactionId)
+        {
+            Transactions[transactionId].Cancel();
+        }
     }
 }

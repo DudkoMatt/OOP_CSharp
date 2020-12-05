@@ -20,5 +20,6 @@ namespace Lab_5
         }
 
         public Bank GetBankById(ulong bankId) => _registeredBanks[bankId];
+        public Bank this[ulong bankId] => _registeredBanks[bankId];
     }
 }
