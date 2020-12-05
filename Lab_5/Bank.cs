@@ -9,7 +9,6 @@ namespace Lab_5
         private ulong _nextAccountId = 0;
         private ulong _nextTransactionId = 0;
         
-        public double DebitPercent { get; set; }
         public double SuspiciousAccountLimit { get; set; }
         
         public double TransferCommission { get; set; }
