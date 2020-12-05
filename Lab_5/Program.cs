@@ -14,16 +14,16 @@ namespace Lab_5
             // var clientDirector = new ClientDirector(new ConsoleClientBuilder());
             var clientDirector = new ClientDirector(new DefaultClientBuilder());
             
-            bankManager[0].AddClient(clientDirector.Make());  // clientId: 0
+            bankManager.AddClient(0, clientDirector.Make());  // clientId: 0
             
             // clientDirector.ChangeBuilder(new DefaultClientBuilder());
-            bankManager[0].AddClient(clientDirector.Make());  // clientId: 1
+            bankManager.AddClient(0, clientDirector.Make());  // clientId: 1
 
             clientDirector.SetAddress = false;
             clientDirector.SetPassport = false;
-            bankManager[0].AddClient(clientDirector.Make());  // clientId: 2
+            bankManager.AddClient(0, clientDirector.Make());  // clientId: 2
             
-            bankManager[1].AddClient(clientDirector.Make());  // clientId: 0
+            bankManager.AddClient(1, clientDirector.Make());  // clientId: 0
 
             var debitAccountCreator = new DebitAccountCreator(bankManager, 3.65);
             var creditAccountCreator = new CreditAccountCreator(bankManager, 100);
@@ -32,11 +32,12 @@ namespace Lab_5
             bankManager[0].ConcreteDepositAccountPercentStrategy = new ConcreteDepositAccountPercentStrategy();
             bankManager[1].ConcreteDepositAccountPercentStrategy = new ConcreteDepositAccountPercentStrategy();
             
-            bankManager[0].AddAccountToClient(0, debitAccountCreator);    // accountId: 0
-            bankManager[0].AddAccountToClient(1, creditAccountCreator);   // accountId: 1
-            bankManager[1].AddAccountToClient(0, depositAccountCreator);  // accountId: 0
+            bankManager.AddAccountToClient(0, 0, debitAccountCreator);    // accountId: 0
+            bankManager.AddAccountToClient(0, 1, creditAccountCreator);   // accountId: 1
+            bankManager.AddAccountToClient(1, 0, depositAccountCreator);  // accountId: 0
 
-            bankManager[0].Put(0, 100);
+            bankManager.Put(0, 0, 100);
+            bankManager.Put(0, 1, 100);
 
             // ------------------------------------- Testing ----------------------------------------------------------
             
@@ -52,11 +53,46 @@ namespace Lab_5
             Console.WriteLine("After 30 days: ");
             Console.Write("Current amount of money: ");
             Console.WriteLine(bankManager[0].GetAccountById(0).Money);
+            Console.WriteLine("------------------------------------------------------");
             
             // --------------------------------------------------------------------------------------------------------
 
             Console.WriteLine();
+            Console.WriteLine("Testing transfer: bankId: 0, accountId: 0 --> bankId: 1, accountId: 0");
+            Console.WriteLine("BankId: 0, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[0].GetAccountById(0).Money);
             
+            Console.WriteLine("BankId: 1, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[1].GetAccountById(0).Money);
+
+            var transferId = bankManager.Transfer(0, 0, 50, 1, 0);
+            
+            Console.WriteLine();
+            Console.WriteLine("After transfer:");
+            Console.WriteLine("BankId: 0, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[0].GetAccountById(0).Money);
+            
+            Console.WriteLine("BankId: 1, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[1].GetAccountById(0).Money);
+            
+            // --------------------------------------------------------------------------------------------------------
+            
+            Console.WriteLine();
+            Console.WriteLine("Testing withdraw transaction:");
+            
+            Console.WriteLine("BankId: 0, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[0].GetAccountById(0).Money);
+            
+            bankManager.Withdraw(0, 0, 20);
+            
+            Console.WriteLine("BankId: 0, AccountId: 0");
+            Console.Write("Current amount of money: ");
+            Console.WriteLine(bankManager[0].GetAccountById(0).Money);
         }
     }
 }

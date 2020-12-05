@@ -81,9 +81,9 @@ namespace Lab_5
             return _nextTransactionId++;
         }
         
-        public ulong Transfer(ulong accountId, double money, ulong accountTo)
+        public ulong Transfer(ulong accountId, double money, Bank bankTo, ulong accountIdTo)
         {
-            Transactions.Add(_nextTransactionId, new TransferTransaction(DateTimeProvider.Now, Accounts[accountId], money, Accounts[accountTo]));
+            Transactions.Add(_nextTransactionId, new TransferTransaction(DateTimeProvider.Now, Accounts[accountId], money, bankTo.Accounts[accountIdTo]));
             return _nextTransactionId++;
         }
 
