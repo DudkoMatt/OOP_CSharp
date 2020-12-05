@@ -26,6 +26,7 @@ namespace Lab_5
         {
             if (IsCanceled) throw new TransactionAlreadyCanceledException();
             IsCanceled = true;
+            _cancel();
         }
     }
 }
