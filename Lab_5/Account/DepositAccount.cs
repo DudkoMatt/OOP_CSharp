@@ -15,9 +15,7 @@ namespace Lab_5
         {
             if (DateTimeProvider.Now < _expirationDate)
                 throw new DepositAccountNotExpiredYetException();
-            
-            if (money > Money) throw new NotEnoughMoneyException();
-            Money -= money;
+            base.Withdraw(money);
         }
     }
 }

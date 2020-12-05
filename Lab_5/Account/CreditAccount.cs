@@ -8,10 +8,5 @@
         {
             OverdraftLimit = overdraftLimit;
         }
-
-        public override void Withdraw(double money)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

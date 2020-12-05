@@ -14,10 +14,15 @@
 
         protected bool CheckClientData() => Client.CheckProfile();
 
-        public abstract void Withdraw(double money);
-
         public void Put(double money) => Money += money;
-        
+
+        public virtual void Withdraw(double money)
+        {
+            if (!CheckClientData() && money > Bank.SuspiciousAccountLimit) throw new SuspiciousAccountLimitException();
+            if (money > Money) throw new NotEnoughMoneyException();
+            Money -= money;
+        }
+
         /// <summary>
         /// Метод, который должен вызываться только для отмены транзакций
         /// </summary>
