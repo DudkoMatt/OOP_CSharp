@@ -4,7 +4,8 @@
     {
         public Client Client { get; }
         public Bank Bank { get; }
-        public double InterestPercent { get; set; }
+        public double InterestPercent { get; set; }  // проценты в годовых
+        protected double Accumulation;  // накопления
         protected double Money;
         
         protected Account(Client client, Bank bank, double interestPercent)
@@ -12,6 +13,7 @@
             Client = client;
             Bank = bank;
             InterestPercent = interestPercent;
+            Accumulation = 0;
         }
 
         protected bool CheckClientData() => Client.CheckProfile();
@@ -23,6 +25,17 @@
             if (!CheckClientData() && money > Bank.SuspiciousAccountLimit) throw new SuspiciousAccountLimitException();
             if (money > Money) throw new NotEnoughMoneyException();
             Money -= money;
+        }
+
+        public void CalculateDailyAccumulation()
+        {
+            Accumulation += Money * InterestPercent / 365;
+        }
+
+        public void AddMonthAccumulation()
+        {
+            Money += Accumulation;
+            Accumulation = 0;
         }
 
         /// <summary>
