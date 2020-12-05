@@ -4,7 +4,7 @@
     {
         public double OverdraftLimit;
         
-        public CreditAccount(Client client, Bank bank, double overdraftLimit) : base(client, bank)
+        public CreditAccount(Client client, Bank bank, double overdraftLimit) : base(client, bank, 0)
         {
             OverdraftLimit = overdraftLimit;
         }

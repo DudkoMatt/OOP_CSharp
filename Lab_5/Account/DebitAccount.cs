@@ -2,7 +2,7 @@
 {
     public class DebitAccount : Account
     {
-        public DebitAccount(Client client, Bank bank) : base(client, bank)
+        public DebitAccount(Client client, Bank bank, double interestPercent) : base(client, bank, interestPercent)
         { }
     }
 }

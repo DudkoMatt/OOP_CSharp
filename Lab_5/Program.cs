@@ -15,15 +15,22 @@ namespace Lab_5
             
             bankManager[0].AddClient(clientDirector.Make());  // clientId: 0
             bankManager[0].AddClient(clientDirector.Make());  // clientId: 1
+
+            clientDirector.SetAddress = false;
+            clientDirector.SetPassport = false;
+            bankManager[0].AddClient(clientDirector.Make());  // clientId: 2
+            
             bankManager[1].AddClient(clientDirector.Make());  // clientId: 0
 
             var creditAccountCreator = new CreditAccountCreator(bankManager, 100);
-            var debitAccountCreator = new DebitAccountCreator(bankManager);
-            var depositAccountCreator = new DepositAccountCreator(bankManager, new DateTime(2020, 12, 20));
+            var debitAccountCreator = new DebitAccountCreator(bankManager, 3.65);
+            var depositAccountCreator = new DepositAccountCreator(bankManager, new DateTime(2020, 12, 20), 3.65);
 
             bankManager[0].AddAccountToClient(0, debitAccountCreator);
             bankManager[0].AddAccountToClient(1, creditAccountCreator);
             bankManager[1].AddAccountToClient(0, depositAccountCreator);
+
+            Console.WriteLine();
         }
     }
 }

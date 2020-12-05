@@ -4,12 +4,14 @@
     {
         public Client Client { get; }
         public Bank Bank { get; }
+        public double InterestPercent { get; set; }
         protected double Money;
         
-        protected Account(Client client, Bank bank)
+        protected Account(Client client, Bank bank, double interestPercent)
         {
             Client = client;
             Bank = bank;
+            InterestPercent = interestPercent;
         }
 
         protected bool CheckClientData() => Client.CheckProfile();

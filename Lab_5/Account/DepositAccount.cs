@@ -6,7 +6,7 @@ namespace Lab_5
     {
         private DateTime _expirationDate;
         
-        public DepositAccount(Client client, Bank bank, DateTime expirationDate) : base(client, bank)
+        public DepositAccount(Client client, Bank bank, DateTime expirationDate, double interestPercent) : base(client, bank, interestPercent)
         {
             _expirationDate = expirationDate;
         }
