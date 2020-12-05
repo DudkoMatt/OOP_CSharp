@@ -8,5 +8,12 @@
         {
             OverdraftLimit = overdraftLimit;
         }
+
+        public override void Withdraw(double money)
+        {
+            if (!CheckClientData() && money > Bank.SuspiciousAccountLimit) throw new SuspiciousAccountLimitException();
+            if (money > Money + OverdraftLimit) throw new NotEnoughMoneyException();
+            Money -= money;
+        }
     }
 }
