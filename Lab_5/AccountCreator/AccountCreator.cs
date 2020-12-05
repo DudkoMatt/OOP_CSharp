@@ -9,6 +9,6 @@
             _bankManager = bankManager;
         }
 
-        public abstract Account CreateAccount(ulong bankId, ulong clientId);
+        public abstract Account CreateAccount(ulong bankId, ulong clientId, double initDeposit = 0);
     }
 }

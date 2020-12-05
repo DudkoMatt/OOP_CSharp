@@ -6,7 +6,7 @@ namespace Lab_5
     {
         public WithdrawTransaction(DateTime dateTime, Account account, double money) : base(dateTime, account, money)
         {
-            Account.Withdraw(Money + Account.Bank.WithdrawCommission);
+            Account.Withdraw(Money);
         }
 
         protected override void _cancel()

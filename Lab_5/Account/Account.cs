@@ -8,12 +8,13 @@
         public double Accumulation { get; protected set; }  // накопления
         public double Money { get; protected set; }
         
-        protected Account(Client client, Bank bank, double interestPercent)
+        protected Account(Client client, Bank bank, double interestPercent, double initDeposit = 0)
         {
             Client = client;
             Bank = bank;
             InterestPercent = interestPercent;
             Accumulation = 0;
+            Money = initDeposit;
         }
 
         protected bool CheckClientData() => Client.CheckProfile();

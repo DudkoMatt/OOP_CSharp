@@ -8,10 +8,10 @@ namespace Lab_5
         private ulong _nextClientId;
         private ulong _nextAccountId;
         private ulong _nextTransactionId;
+
+        public IDepositAccountPercentStrategy ConcreteDepositAccountPercentStrategy { get; set; }
         
         public double SuspiciousAccountLimit { get; set; }
-        
-        public double TransferCommission { get; set; }
         public double WithdrawCommission { get; set; }
 
         public readonly ulong Id;
@@ -90,6 +90,11 @@ namespace Lab_5
         public void CancelTransaction(ulong transactionId)
         {
             Transactions[transactionId].Cancel();
+        }
+
+        public double CalculateDepositPercent(double money)
+        {
+            return ConcreteDepositAccountPercentStrategy.Calculate(money);
         }
     }
 }
