@@ -27,7 +27,7 @@ namespace Lab_5
 
         public bool CheckProfile()
         {
-            return Address != "" && Address != null && PassportNumber != "" && PassportNumber != null;
+            return !string.IsNullOrEmpty(Address) && !string.IsNullOrEmpty(PassportNumber);
         }
         
         public void AddAccount(ulong accountId, Account account)
