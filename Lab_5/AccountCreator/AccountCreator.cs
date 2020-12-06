@@ -2,11 +2,11 @@
 {
     public abstract class AccountCreator
     {
-        protected BankManager _bankManager;
+        protected BankManager BankManager;
         
         public AccountCreator(BankManager bankManager)
         {
-            _bankManager = bankManager;
+            BankManager = bankManager;
         }
 
         public abstract Account CreateAccount(ulong bankId, ulong clientId, double initDeposit = 0);

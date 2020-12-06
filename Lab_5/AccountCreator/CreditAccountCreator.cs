@@ -11,7 +11,7 @@
 
         public override Account CreateAccount(ulong bankId, ulong clientId, double initDeposit = 0)
         {
-            var bank = _bankManager.GetBankById(bankId);
+            var bank = BankManager.GetBankById(bankId);
             var client = bank.GetClientById(clientId);
             return new CreditAccount(client, bank, OverdraftLimit);
         }

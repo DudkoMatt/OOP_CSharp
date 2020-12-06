@@ -13,9 +13,9 @@ namespace Lab_5
 
         public override Account CreateAccount(ulong bankId, ulong clientId, double initDeposit = 0)
         {
-            var bank = _bankManager.GetBankById(bankId);
+            var bank = BankManager.GetBankById(bankId);
             var client = bank.GetClientById(clientId);
-            return new DepositAccount(client, bank, ExpirationDate, _bankManager[bankId].CalculateDepositPercent(initDeposit));
+            return new DepositAccount(client, bank, ExpirationDate, BankManager[bankId].CalculateDepositPercent(initDeposit));
         }
     }
 }
