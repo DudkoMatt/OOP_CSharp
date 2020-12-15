@@ -27,6 +27,7 @@ namespace Lab_5
             Accounts = new Dictionary<ulong, Account>();
             Clients = new Dictionary<ulong, Client>();
             Transactions = new Dictionary<ulong, Transaction>();
+            // ToDO: ConcreteDepositAccountPercentStrategy - set
         }
 
         public ulong AddClient(Client client)

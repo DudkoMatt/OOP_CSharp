@@ -1,5 +1,7 @@
 ﻿namespace Lab_5
 {
+    // ToDO: утечка памяти из-за циклических ссылок
+    // ToDO: WeakReference
     public abstract class Account
     {
         public Client Client { get; }
@@ -28,11 +30,13 @@
             Money -= money;
         }
 
+        // ToDO: rename
         public void CalculateDailyAccumulation()
         {
             Accumulation += Money * InterestPercent / 36500;
         }
 
+        // ToDO: rename
         public void AddMonthAccumulation()
         {
             Money += Accumulation;

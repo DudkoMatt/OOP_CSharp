@@ -20,7 +20,7 @@ namespace Lab_5
             IsCanceled = false;
         }
 
-        protected abstract void _cancel();
+        protected abstract void _cancel();  // ToDO: CancelOverride
         
         public void Cancel()
         {
