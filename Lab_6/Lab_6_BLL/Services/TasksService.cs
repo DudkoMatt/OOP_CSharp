@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Lab_6_BLL.DTO;
 using Lab_6_BLL.Infrastructure;
 using Lab_6_BLL.Services.TaskServiceHistory;
@@ -14,8 +15,6 @@ namespace Lab_6_BLL.Services
         private int _nextHistoryChangeId;
 
         private IRepository<TaskDAL> _repository;
-        
-        private readonly Dictionary<int, TaskDTO> _allTasks;
 
         private readonly Dictionary<int, TasksServiceHistoryEntry> _history;
         
@@ -24,13 +23,6 @@ namespace Lab_6_BLL.Services
             _history = new Dictionary<int, TasksServiceHistoryEntry>();
             _repository = repository;
             _nextTaskId = repository.GetMaxId() + 1;
-
-            _allTasks = new Dictionary<int, TaskDTO>();
-            for (var i = 0; i < repository.GetMaxId(); i++)
-            {
-                if (_repository.TryGet(i))
-                    _allTasks.Add(i, new TaskDTO(_repository.Get(i)));
-            }
         }
         
         private void AddHistoryEntry(TasksServiceHistoryEntry entry)
@@ -41,7 +33,6 @@ namespace Lab_6_BLL.Services
         public int CreateTask(string name, string description, int staffId)
         {
             var task = new TaskDTO(_nextTaskId, name, description, TaskDTO.TaskState.Active, staffId);
-            _allTasks.Add(_nextTaskId, task);
             
             _repository.Create(task.ToTaskDAL());
             AddHistoryEntry(new TasksServiceCreateTask(DateTime.Now, _nextTaskId, staffId));
@@ -50,9 +41,9 @@ namespace Lab_6_BLL.Services
 
         private void UpdateTaskState(int taskId, TaskDTO.TaskState state)
         {
-            _allTasks[taskId].State = state;
-            _repository.Update(_allTasks[taskId].ToTaskDAL());
-            AddHistoryEntry(new TasksServiceUpdateTaskState(DateTime.Now, taskId, _allTasks[taskId].StaffId, state));
+            var temp = new TaskDTO(_repository.Get(taskId)) {State = state};
+            _repository.Update(temp.ToTaskDAL());
+            AddHistoryEntry(new TasksServiceUpdateTaskState(DateTime.Now, taskId, temp.StaffId, state));
         }
         
         public void MarkTaskAsResolved(int taskId)
@@ -72,26 +63,26 @@ namespace Lab_6_BLL.Services
 
         public void UpdateStaffIdInTask(int taskId, int staffId)
         {
-            _allTasks[taskId].StaffId = staffId;
-            _repository.Update(_allTasks[taskId].ToTaskDAL());
-            AddHistoryEntry(new TasksServiceUpdateTaskStaffId(DateTime.Now, taskId, _allTasks[taskId].StaffId, staffId));
+            var temp = new TaskDTO(_repository.Get(taskId)) {StaffId = staffId};
+            _repository.Update(temp.ToTaskDAL());
+            AddHistoryEntry(new TasksServiceUpdateTaskStaffId(DateTime.Now, taskId, temp.StaffId, staffId));
         }
 
         public void UpdateTaskComment(int taskId, string comment)
         {
-            _allTasks[taskId].Comment = comment;
-            _repository.Update(_allTasks[taskId].ToTaskDAL());
-            AddHistoryEntry(new TasksServiceUpdateTaskComment(DateTime.Now, taskId, _allTasks[taskId].StaffId, comment));
+            var temp = new TaskDTO(_repository.Get(taskId)) {Comment = comment};
+            _repository.Update(temp.ToTaskDAL());
+            AddHistoryEntry(new TasksServiceUpdateTaskComment(DateTime.Now, taskId, temp.StaffId, comment));
         }
 
         public IEnumerable<TaskDTO> GetAllTasks()
         {
-            return _allTasks.Values;
+            return _repository.GetAll().Select(t => new TaskDTO(t));
         }
 
         public TaskDTO GetTaskById(int taskId)
         {
-            return _allTasks[taskId];
+            return new TaskDTO(_repository.Get(taskId));
         }
         
         public IEnumerable<TaskDTO> FindTasksByCreationDate(DateTime date)
@@ -104,7 +95,7 @@ namespace Lab_6_BLL.Services
 
                 if (!(historyEntry is TasksServiceCreateTask createTask)) continue;
                 if (createTask.DateTime.Date == date.Date)
-                    tasks.Add(_allTasks[createTask.TaskId]);
+                    tasks.Add( new TaskDTO(_repository.Get(createTask.TaskId)));
             }
 
             return tasks;
@@ -120,7 +111,7 @@ namespace Lab_6_BLL.Services
 
                 if (!(historyEntry is TasksServiceModifyTask modifyTask)) continue;
                 if (modifyTask.DateTime.Date == date.Date)
-                    tasks.Add(_allTasks[modifyTask.TaskId]);
+                    tasks.Add(new TaskDTO(_repository.Get(modifyTask.TaskId)));
             }
 
             return tasks;
@@ -128,14 +119,7 @@ namespace Lab_6_BLL.Services
 
         public IEnumerable<TaskDTO> FindTasksByStaffId(int staffId)
         {
-            var tasks = new List<TaskDTO>();
-            foreach (var (taskId, taskDTO) in _allTasks)
-            {
-                if (taskDTO.StaffId == staffId)
-                    tasks.Add(taskDTO);
-            }
-
-            return tasks;
+            return GetAllTasks().Where(t => t.StaffId == staffId).ToList();
         }
 
         public IEnumerable<TaskDTO> FindTasksModifiedByStaffId(int staffId)
@@ -145,7 +129,7 @@ namespace Lab_6_BLL.Services
             {
                 if (!(historyEntry is TasksServiceModifyTask modifyTask)) continue;
                 if (modifyTask.StaffId == staffId)
-                    tasks.Add(_allTasks[modifyTask.TaskId]);
+                    tasks.Add(new TaskDTO(_repository.Get(modifyTask.TaskId)));
             }
 
             return tasks;
@@ -169,7 +153,7 @@ namespace Lab_6_BLL.Services
             {
                 if (!(historyEntry is TasksServiceModifyTask modifyTask)) continue;
                 if (modifyTask.StaffId == staffId && historyEntry.DateTime.Date == date.Date)
-                    tasks.Add(_allTasks[modifyTask.TaskId]);
+                    tasks.Add(new TaskDTO(_repository.Get(modifyTask.TaskId)));
             }
 
             return tasks;

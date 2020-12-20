@@ -12,6 +12,8 @@ namespace Lab_6_BLL.Infrastructure
         public ReportDTO GetById(int reportId);
         public IEnumerable<ReportDTO> GetAllReports();
         
+        public IEnumerable<ReportDTO> FindReportsByStaffId(int staffId);
+        
         public int CreateSprintReport();
         public void UpdateSprintReport();
     }
