@@ -5,15 +5,13 @@ namespace Lab_6.UI.ViewModels
 {
     public class StaffVM
     {
-        public int Id { get; }
-        public string Name { get; }
-        public int MentorId { get; }
+        public string Name { get; set; }
+        public int MentorId { get; set; }
         
-        public readonly List<int> SubordinatesId;
+        public List<int> SubordinatesId { get; set; }
 
-        public StaffVM(int id, string name, int mentorId = 0, List<int> subordinatesId = null)
+        public StaffVM(string name, int mentorId = 0, List<int> subordinatesId = null)
         {
-            Id = id;
             Name = name;
             MentorId = mentorId;
             SubordinatesId = subordinatesId ?? new List<int>();
@@ -21,7 +19,6 @@ namespace Lab_6.UI.ViewModels
         
         public StaffVM(StaffDTO staffDTO)
         {
-            Id = staffDTO.Id;
             Name = staffDTO.Name;
             MentorId = staffDTO.MentorId;
             SubordinatesId = staffDTO.SubordinatesId;
@@ -29,7 +26,7 @@ namespace Lab_6.UI.ViewModels
 
         public StaffDTO ToStaffDTO()
         {
-            return new StaffDTO(Id, Name, MentorId, SubordinatesId);
+            return new StaffDTO(-1, Name, MentorId, SubordinatesId);
         }
     }
 }

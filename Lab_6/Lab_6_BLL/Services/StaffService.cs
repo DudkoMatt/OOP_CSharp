@@ -9,57 +9,72 @@ namespace Lab_6_BLL.Services
 {
     public class StaffService : IStaffService
     {
-        private int _nextStaffId;
-
         private IRepository<StaffDAL> _repository;
         
         public StaffService(IRepository<StaffDAL> repository)
         {
             _repository = repository;
-            _nextStaffId = repository.GetMaxId() + 1;
         }
         
-        public int CreateStaff(string name)
+        public int CreateStaff(StaffDTO staffDTO)
         {
-            var staff = new StaffDTO(_nextStaffId, name);
-            if (_nextStaffId != 0)
-                AddSubordinate(0, _nextStaffId);
+            var staffDAL = staffDTO.ToStaffDAL();
+            _repository.Create(staffDAL);
+            staffDTO.Id = staffDAL.Id;
             
-            _repository.Create(staff.ToStaffDAL());
-            return _nextStaffId++;
+            if (staffDTO.Id != 0)
+                AddSubordinate(new StaffDTO(_repository.Get(0)), staffDTO);
+
+            return staffDTO.Id;
         }
 
-        public int GetMentorId(int staffId)
+        public void FixStaffDTO(StaffDTO staffDTO)
         {
-            return new StaffDTO(_repository.Get(staffId)).MentorId;
+            var staffDAL = staffDTO.ToStaffDAL();
+            _repository.Fix(staffDAL);
+            staffDTO.Id = staffDAL.Id;
         }
 
-        public void SetMentorId(int staffId, int mentorId = 0)
+        public int GetMentorId(StaffDTO staffDTO)
         {
-            var temp = new StaffDTO(_repository.Get(staffId));
-            RemoveSubordinate(temp.MentorId, staffId);
-            temp.MentorId = mentorId;
-            _repository.Update(temp.ToStaffDAL());
-            AddSubordinate(mentorId, staffId);
+            FixStaffDTO(staffDTO);
+            return new StaffDTO(_repository.Get(staffDTO.Id)).MentorId;
         }
 
-        public void AddSubordinate(int mentorId, int subordinateId)
+        public void SetMentor(StaffDTO staffDTO, StaffDTO mentorStaffDTO)
         {
-            var temp = new StaffDTO(_repository.Get(mentorId));
-            temp.AddSubordinate(subordinateId);
-            _repository.Update(temp.ToStaffDAL());
+            FixStaffDTO(staffDTO);
+            FixStaffDTO(mentorStaffDTO);
+            RemoveSubordinate(new StaffDTO(_repository.Get(staffDTO.MentorId)), staffDTO);
+            staffDTO.MentorId = mentorStaffDTO.Id;
+            _repository.Update(staffDTO.ToStaffDAL());
+            AddSubordinate(mentorStaffDTO, staffDTO);
+        }
+        
+        public void AddSubordinate(StaffDTO mentorStaffDto, StaffDTO subordinateStaffDTO)
+        {
+            FixStaffDTO(mentorStaffDto);
+            FixStaffDTO(subordinateStaffDTO);
+            mentorStaffDto.AddSubordinate(subordinateStaffDTO.Id);
+            _repository.Update(mentorStaffDto.ToStaffDAL());
         }
 
-        public void RemoveSubordinate(int mentorId, int subordinateId)
+        public void RemoveSubordinate(StaffDTO mentorStaffDTO, StaffDTO subordinateStaffDTO)
         {
-            var temp = new StaffDTO(_repository.Get(mentorId));
-            temp.RemoveSubordinate(subordinateId);
-            _repository.Update(temp.ToStaffDAL());
+            FixStaffDTO(mentorStaffDTO);
+            FixStaffDTO(subordinateStaffDTO);
+            mentorStaffDTO.RemoveSubordinate(subordinateStaffDTO.Id);
+            _repository.Update(mentorStaffDTO.ToStaffDAL());
         }
 
         public IEnumerable<StaffDTO> GetAllStaff()
         {
             return _repository.GetAll().Select(t=> new StaffDTO(t));
+        }
+
+        public StaffDTO GetById(int staffId)
+        {
+            return new StaffDTO(_repository.Get(staffId));
         }
     }
 }

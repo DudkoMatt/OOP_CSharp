@@ -10,8 +10,6 @@ namespace Lab_6_BLL.Services
 {
     public class ReportService : IReportService
     {
-        private int _nextReportId;
-
         private IRepository<ReportDAL> _repository;
 
         private IStaffService _staffService;
@@ -25,24 +23,32 @@ namespace Lab_6_BLL.Services
             _tasksService = tasksService;
             
             _repository = repository;
-            _nextReportId = repository.GetMaxId() + 1;
         }
 
-        public int CreateDailyReport(int staffId)
+        public void FixReportDTO(ReportDTO reportDTO)
         {
-            var report = new ReportDTO(_nextReportId, DateTime.Now, staffId);
-            _repository.Create(report.ToReportDAL());
-            return _nextReportId++;
+            var reportDAL = reportDTO.ToReportDAL();
+            _repository.Fix(reportDAL);
+            reportDTO.Id = reportDAL.Id;
         }
 
-        public void UpdateDailyReport(int reportId)
+        public int CreateDailyReport(StaffDTO staffDTO)
         {
-            var report = new ReportDTO(_repository.Get(reportId));
-            var staffId = report.StaffId;
-            report.ChangesTasksId = _tasksService.FindTasksModifiedByStaffIdAndDate(staffId, DateTime.Now)
-                .Select(taskDTO => taskDTO.Id).ToList();
+            _staffService.FixStaffDTO(staffDTO);
+            var reportDAL = new ReportDTO(-1, DateTime.Now, staffDTO.Id).ToReportDAL();
+            _repository.Create(reportDAL);
+            return reportDAL.Id;
+        }
+
+        public void UpdateDailyReport(ReportDTO reportDTO)
+        {
+            FixReportDTO(reportDTO);
+            var report = new ReportDTO(_repository.Get(reportDTO.Id));
+            var staff = _staffService.GetById(report.StaffId);
+            report.ChangesTasksId = _tasksService.FindTasksModifiedByStaffAndDate(staff, DateTime.Now)
+                .Select(taskDTO => taskDTO.Id).Distinct().ToList();
             
-            foreach (var taskId in _tasksService.GetAllTasks().Where(t => t.State == TaskDTO.TaskState.Resolved && t.StaffId == staffId).Select(t => t.Id))
+            foreach (var taskId in _tasksService.GetAllTasks().Where(t => t.State == TaskDTO.TaskState.Resolved && t.StaffId == staff.Id).Select(t => t.Id))
             {
                 report.AddResolveTask(taskId);
             }
@@ -50,9 +56,10 @@ namespace Lab_6_BLL.Services
             _repository.Update(report.ToReportDAL());
         }
 
-        public void MarkDailyReportFinalised(int reportId)
+        public void MarkDailyReportFinalised(ReportDTO reportDTO)
         {
-            var report = new ReportDTO(_repository.Get(reportId)) {Finalised = true};
+            FixReportDTO(reportDTO);
+            var report = new ReportDTO(_repository.Get(reportDTO.Id)) {Finalised = true};
             _repository.Update(report.ToReportDAL());
         }
 
@@ -65,24 +72,27 @@ namespace Lab_6_BLL.Services
         public int CreateSprintReport()
         {
             // Он не отличается от создания дневного, кроме того, что принадлежит директору == корню
-            _sprintReportId = CreateDailyReport(0);
-            return _sprintReportId;
+            throw new NotImplementedException();
+            /*_sprintReportId = CreateDailyReport(TODO);
+            return _sprintReportId;*/
         }
         
         public void UpdateSprintReport()
         {
             // ToDO
             throw new NotImplementedException();
+            /*
             // Вызовем UpdateDailyReport для всех отчетов
             foreach (var reportDTO in GetAllReports())
             {
-                UpdateDailyReport(reportDTO.Id);
+                UpdateDailyReport(TODO);
             }
             
             // ToDO: abracadabra -> Projiekt Reparo!
             
-            UpdateDailyReport(_sprintReportId);
+            UpdateDailyReport(TODO);
             // ToDO: work with staff
+            */
         }
 
         public ReportDTO GetById(int reportId)
@@ -90,9 +100,10 @@ namespace Lab_6_BLL.Services
             return new ReportDTO(_repository.Get(reportId));
         }
 
-        public IEnumerable<ReportDTO> FindReportsByStaffId(int staffId)
+        public IEnumerable<ReportDTO> FindReportsByStaffId(StaffDTO staffDTO)
         {
-            return _repository.GetAll().Where(t => t.StaffId == staffId).Select(t => new ReportDTO(t));
+            _staffService.FixStaffDTO(staffDTO);
+            return _repository.GetAll().Where(t => t.StaffId == staffDTO.Id).Select(t => new ReportDTO(t));
         }
     }
 }

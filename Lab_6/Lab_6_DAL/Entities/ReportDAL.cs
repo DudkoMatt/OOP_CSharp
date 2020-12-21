@@ -6,12 +6,12 @@ namespace Lab_6_DAL.Entities
 {
     public class ReportDAL : IEntity
     {
-        public int Id { get; }
-        public readonly DateTime CreationDateTime;
-        public int StaffId;
-        public bool Finalised;
-        public List<int> ResolvedTasks;
-        public List<int> ChangesId;
+        public int Id { get; set; }
+        public DateTime CreationDateTime { get; set; }
+        public int StaffId { get; set; }
+        public bool Finalised { get; set; }
+        public List<int> ResolvedTasks { get; set; }
+        public List<int> ChangesId { get; set; }
         
         public ReportDAL(int id, DateTime dateTime, int staffId, bool finalised, List<int> resolvedTasks = null, List<int> changesId = null)
         {

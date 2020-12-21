@@ -49,12 +49,16 @@ namespace Lab_6_DAL.Infrastructure
             return maxId;
         }
 
-        public abstract void Create(T item);
+        public abstract int Create(T item);
         public abstract void Update(T item);
 
-        public void Delete(int id)
+        public void Delete(T item)
         {
-            File.Delete($"{DirectoryPath}/{id}.txt");
+            File.Delete($"{DirectoryPath}/{item.Id}.txt");
         }
+
+        protected abstract void WriteToFile(T item);
+
+        public abstract void Fix(T item);
     }
 }

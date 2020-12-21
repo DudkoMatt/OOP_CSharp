@@ -5,14 +5,17 @@ namespace Lab_6_BLL.Infrastructure
 {
     public interface IStaffService
     {
-        public int CreateStaff(string name);
+        public int CreateStaff(StaffDTO staffDTO);
 
         public IEnumerable<StaffDTO> GetAllStaff();
         
-        public void SetMentorId(int staffId, int mentorId = 0);
-        public int GetMentorId(int staffId);
+        public void SetMentor(StaffDTO staffDTO, StaffDTO mentorStaffDTO);
+        public int GetMentorId(StaffDTO staffDTO);
 
-        public void AddSubordinate(int staffId, int subordinateId);
-        public void RemoveSubordinate(int staffId, int subordinateId);
+        public StaffDTO GetById(int staffId);
+
+        public void AddSubordinate(StaffDTO staffDTO, StaffDTO subordinateStaffDTO);
+        public void RemoveSubordinate(StaffDTO staffDTO, StaffDTO subordinateStaffDTO);
+        public void FixStaffDTO(StaffDTO staffDTO);
     }
 }

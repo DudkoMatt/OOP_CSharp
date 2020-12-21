@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Lab_6_DAL.Entities;
 using Lab_6_DAL.Exceptions;
 using Lab_6_DAL.Infrastructure;
@@ -9,8 +10,12 @@ namespace Lab_6_DAL.Repositories
 {
     public class ReportFileRepository : FileRepository<ReportDAL>
     {
+        private int _nextReportId;
+
         public ReportFileRepository(string directoryPath) : base(directoryPath)
-        { }
+        {
+            _nextReportId = GetMaxId() + 1;
+        }
         
         public override ReportDAL Get(int id)
         {
@@ -38,7 +43,7 @@ namespace Lab_6_DAL.Repositories
             return new ReportDAL(id, creationDateTime, staffId, finalised, resolvedTasks, changesId);
         }
 
-        public override void Create(ReportDAL item)
+        protected override void WriteToFile(ReportDAL item)
         {
             File.Create($"{DirectoryPath}/{item.Id}.txt").Close();
             using var sw = new StreamWriter($"{DirectoryPath}/{item.Id}.txt");
@@ -57,9 +62,28 @@ namespace Lab_6_DAL.Repositories
             }
         }
 
+        public override int Create(ReportDAL item)
+        {
+            item.Id = _nextReportId;
+            WriteToFile(item);
+            return _nextReportId++;
+        }
+
         public override void Update(ReportDAL item)
         {
-            Create(item);
+            WriteToFile(item);
+        }
+
+        public override void Fix(ReportDAL item)
+        {
+            var report = GetAll().First(r =>
+                r.ChangesId.OrderBy(i => i).SequenceEqual(item.ChangesId.OrderBy(i => i)) &&
+                r.ResolvedTasks.OrderBy(i => i).SequenceEqual(item.ResolvedTasks.OrderBy(i => i)) &&
+                r.StaffId == item.StaffId &&
+                r.CreationDateTime == item.CreationDateTime &&
+                r.Finalised == item.Finalised
+            );
+            item.Id = report.Id;
         }
     }
 }

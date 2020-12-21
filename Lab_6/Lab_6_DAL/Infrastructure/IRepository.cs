@@ -11,8 +11,10 @@ namespace Lab_6_DAL.Infrastructure
 
         int GetMaxId();
         
-        void Create(T item);
+        int Create(T item);
         void Update(T item);
-        void Delete(int id);
+        void Delete(T item);
+
+        void Fix(T item);
     }
 }

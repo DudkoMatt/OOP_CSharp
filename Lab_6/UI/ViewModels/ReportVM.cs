@@ -6,7 +6,6 @@ namespace Lab_6.UI.ViewModels
 {
     public class ReportVM
     {
-        public readonly int Id;
         public readonly DateTime CreationDateTime;
         public int StaffId;
         public bool Finalised;
@@ -15,9 +14,8 @@ namespace Lab_6.UI.ViewModels
         // Id тасков, в которых в день создания совершены изменения
         public List<int> ChangesTasksId;
         
-        public ReportVM(int id, DateTime dateTime, int staffId, bool finalised = false, List<int> resolvedTasks = null, List<int> changesId = null)
+        public ReportVM(DateTime dateTime, int staffId, bool finalised = false, List<int> resolvedTasks = null, List<int> changesId = null)
         {
-            Id = id;
             CreationDateTime = dateTime;
             StaffId = staffId;
             Finalised = finalised;
@@ -27,7 +25,6 @@ namespace Lab_6.UI.ViewModels
         
         public ReportVM(ReportDTO reportDTO)
         {
-            Id = reportDTO.Id;
             CreationDateTime = reportDTO.CreationDateTime;
             StaffId = reportDTO.StaffId;
             Finalised = reportDTO.Finalised;
@@ -35,9 +32,9 @@ namespace Lab_6.UI.ViewModels
             ChangesTasksId = reportDTO.ChangesTasksId;
         }
 
-        public ReportDTO ToReportDto()
+        public ReportDTO ToReportDTO()
         {
-            return new ReportDTO(Id, CreationDateTime, StaffId, Finalised, ResolvedTasks, ChangesTasksId);
+            return new ReportDTO(-1, CreationDateTime, StaffId, Finalised, ResolvedTasks, ChangesTasksId);
         }
     }
 }

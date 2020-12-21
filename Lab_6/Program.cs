@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Lab_6.UI;
 using Lab_6.UI.ViewModels;
 using Lab_6_BLL.Services;
@@ -29,38 +28,41 @@ namespace Lab_6
             
             // Создание сервисов
             var staffService = new StaffService(staffFileRepository);
-            var taskService = new TasksService(taskFileRepository);
+            var taskService = new TasksService(taskFileRepository, staffService);
             var reportService = new ReportService(reportFileRepository, staffService, taskService);
 
             // Создание UI
             var userInterfaceController = new UIController(reportService, staffService, taskService);
             
             // Создание работников
-            var staffId = userInterfaceController.CreateStaff("someName");
-            var staff = userInterfaceController.GetAllStaff().First(t => t.Id == staffId);
+            var staffId = userInterfaceController.CreateStaff(new StaffVM("someName"));
+            var staff = userInterfaceController.GetStaffById(staffId);
 
-            var staffId2 = userInterfaceController.CreateStaff("Name 2");
-            var staff2 = userInterfaceController.GetAllStaff().First(t => t.Id == staffId2);
+            var staffId2 = userInterfaceController.CreateStaff(new StaffVM("Name 2"));
+            var staff2 = userInterfaceController.GetStaffById(staffId2);
+            
+            // Обновим:
+            staff = userInterfaceController.GetStaffById(staffId);
 
             // Создание отчетов
             var reportId = userInterfaceController.CreateDailyReport(staff);
-            var report = userInterfaceController.GetAllReports().First(r => r.Id == reportId);
+            var report = userInterfaceController.GetReportById(reportId);
             
-            var reportId2 = userInterfaceController.CreateDailyReport(staff);
-            var report2 = userInterfaceController.GetAllReports().First(r => r.Id == reportId2);
+            var reportId2 = userInterfaceController.CreateDailyReport(staff2);
+            var report2 = userInterfaceController.GetReportById(reportId2);
             
             // Создание задач
-            var taskId = userInterfaceController.CreateTask("Task #1", "Test task", staff);
-            var taskId2 = userInterfaceController.CreateTask("Task #2", "Test task 2", staff2);
-            var taskId3 = userInterfaceController.CreateTask("Task #3", "Test task 3", staff2);
+            var taskId = userInterfaceController.CreateTask(new TaskVM("Task #1", "Test task"), staff);
+            var taskId2 = userInterfaceController.CreateTask(new TaskVM("Task #2", "Test task 2"), staff2);
+            var taskId3 = userInterfaceController.CreateTask(new TaskVM("Task #3", "Test task 3"), staff2);
 
-            var task = userInterfaceController.GetAllTasks().First(t => t.Id == taskId);
-            var task2 = userInterfaceController.GetAllTasks().First(t => t.Id == taskId2);
-            var task3 = userInterfaceController.GetAllTasks().First(t => t.Id == taskId3);
+            var task = userInterfaceController.GetTaskById(taskId);
+            var task2 = userInterfaceController.GetTaskById(taskId2);
+            var task3 = userInterfaceController.GetTaskById(taskId3);
 
             // Пример обновления задачи через UI
-            task.Comment = "There is new comment";
-            userInterfaceController.UpdateTaskComment(task);
+            var taskUpdated = new TaskVM(task.Name, "There is new comment", task.StaffId, task.State);
+            userInterfaceController.UpdateTaskComment(task, taskUpdated);
             
             // Отмечаем задачи решенными
             userInterfaceController.MarkTaskAsResolved(task);
@@ -68,22 +70,23 @@ namespace Lab_6
             userInterfaceController.MarkTaskAsResolved(task3);
             
             // Обновляем отчет в связи с выполненными задачами
+            report = userInterfaceController.GetReportById(reportId);
+            report2 = userInterfaceController.GetReportById(reportId2);
             userInterfaceController.UpdateDailyReport(report);
             userInterfaceController.UpdateDailyReport(report2);
 
             // Помечаем отчет выполненным
-            report = userInterfaceController.GetAllReports().First(r => r.Id == reportId);
+            report = userInterfaceController.GetReportById(reportId);
             userInterfaceController.MarkDailyReportFinalised(report);
             
-            report2 = userInterfaceController.GetAllReports().First(r => r.Id == reportId2);
+            report2 = userInterfaceController.GetReportById(reportId2);
             userInterfaceController.MarkDailyReportFinalised(report2);
 
             // ---------------------------------------------------------------------------------------------------------
             
             // Вывод после всех изменений:
-            report = userInterfaceController.GetAllReports().First(r => r.Id == reportId);
+            report = userInterfaceController.GetReportById(reportId);
             Console.WriteLine("Состояние отчета:");
-            Console.WriteLine($"Id: {report.Id}");
             Console.WriteLine($"Finalised: {report.Finalised}");
             Console.Write("Resolved taskId: ");
             foreach (var resolvedTaskId in report.ResolvedTasks)

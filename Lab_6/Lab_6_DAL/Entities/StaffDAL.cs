@@ -5,11 +5,11 @@ namespace Lab_6_DAL.Entities
 {
     public class StaffDAL : IEntity
     {
-        public int Id { get; }
-        public string Name { get; }
-        public int MentorId { get; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int MentorId { get; set; }
         
-        public readonly List<int> SubordinatesId;
+        public List<int> SubordinatesId { get; set; }
 
         public StaffDAL(int id, string name, int mentorId = 0, List<int> subordinatesId = null)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Lab_6_BLL.DTO;
 using Lab_6_BLL.Infrastructure;
@@ -11,18 +12,25 @@ namespace Lab_6_BLL.Services
 {
     public class TasksService : ITasksService
     {
-        private int _nextTaskId;
         private int _nextHistoryChangeId;
 
         private IRepository<TaskDAL> _repository;
 
         private readonly Dictionary<int, TasksServiceHistoryEntry> _history;
+        private WeakReference<IStaffService> _staffService;
         
-        public TasksService(IRepository<TaskDAL> repository)
+        public TasksService(IRepository<TaskDAL> repository, IStaffService staffService)
         {
             _history = new Dictionary<int, TasksServiceHistoryEntry>();
             _repository = repository;
-            _nextTaskId = repository.GetMaxId() + 1;
+            _staffService = new WeakReference<IStaffService>(staffService);
+        }
+
+        public void FixTaskDTO(TaskDTO taskDTO)
+        {
+            var taskDAL = taskDTO.ToTaskDAL();
+            _repository.Fix(taskDAL);
+            taskDTO.Id = taskDAL.Id;
         }
         
         private void AddHistoryEntry(TasksServiceHistoryEntry entry)
@@ -30,49 +38,62 @@ namespace Lab_6_BLL.Services
             _history.Add(_nextHistoryChangeId++, entry);
         }
         
-        public int CreateTask(string name, string description, int staffId)
+        public int CreateTask(TaskDTO taskDTO, StaffDTO staffDTO)
         {
-            var task = new TaskDTO(_nextTaskId, name, description, TaskDTO.TaskState.Active, staffId);
+            _staffService.TryGetTarget(out var staffService);
+            staffService.FixStaffDTO(staffDTO);
             
-            _repository.Create(task.ToTaskDAL());
-            AddHistoryEntry(new TasksServiceCreateTask(DateTime.Now, _nextTaskId, staffId));
-            return _nextTaskId++;
-        }
+            var taskDAL = taskDTO.ToTaskDAL();
+            taskDAL.StaffId = staffDTO.Id;
+            
+            _repository.Create(taskDAL);
+            taskDTO.Id = taskDAL.Id;
 
-        private void UpdateTaskState(int taskId, TaskDTO.TaskState state)
-        {
-            var temp = new TaskDTO(_repository.Get(taskId)) {State = state};
-            _repository.Update(temp.ToTaskDAL());
-            AddHistoryEntry(new TasksServiceUpdateTaskState(DateTime.Now, taskId, temp.StaffId, state));
+            AddHistoryEntry(new TasksServiceCreateTask(DateTime.Now, taskDTO.Id, staffDTO.Id));
+            return taskDTO.Id;
         }
         
-        public void MarkTaskAsResolved(int taskId)
+        private void UpdateTaskState(TaskDTO taskDTO, TaskDTO.TaskState state)
         {
-            UpdateTaskState(taskId, TaskDTO.TaskState.Resolved);
-        }
-
-        public void MarkTaskAsOpen(int taskId)
-        {
-            UpdateTaskState(taskId, TaskDTO.TaskState.Open);
-        }
-
-        public void MarkTaskAsActive(int taskId)
-        {
-            UpdateTaskState(taskId, TaskDTO.TaskState.Active);
-        }
-
-        public void UpdateStaffIdInTask(int taskId, int staffId)
-        {
-            var temp = new TaskDTO(_repository.Get(taskId)) {StaffId = staffId};
+            var temp = new TaskDTO(_repository.Get(taskDTO.Id)) {State = state};
             _repository.Update(temp.ToTaskDAL());
-            AddHistoryEntry(new TasksServiceUpdateTaskStaffId(DateTime.Now, taskId, temp.StaffId, staffId));
+            AddHistoryEntry(new TasksServiceUpdateTaskState(DateTime.Now, taskDTO.Id, temp.StaffId, state));
         }
 
-        public void UpdateTaskComment(int taskId, string comment)
+        public void MarkTaskAsResolved(TaskDTO taskDTO)
         {
-            var temp = new TaskDTO(_repository.Get(taskId)) {Comment = comment};
+            FixTaskDTO(taskDTO);
+            UpdateTaskState(taskDTO, TaskDTO.TaskState.Resolved);
+        }
+
+        public void MarkTaskAsOpen(TaskDTO taskDTO)
+        {
+            FixTaskDTO(taskDTO);
+            UpdateTaskState(taskDTO, TaskDTO.TaskState.Open);
+        }
+
+        public void MarkTaskAsActive(TaskDTO taskDTO)
+        {
+            FixTaskDTO(taskDTO);
+            UpdateTaskState(taskDTO, TaskDTO.TaskState.Active);
+        }
+        
+        public void UpdateStaffIdInTask(TaskDTO taskDTO, StaffDTO staffDTO)
+        {
+            FixTaskDTO(taskDTO);
+            var temp = new TaskDTO(_repository.Get(taskDTO.Id)) {StaffId = staffDTO.Id};
             _repository.Update(temp.ToTaskDAL());
-            AddHistoryEntry(new TasksServiceUpdateTaskComment(DateTime.Now, taskId, temp.StaffId, comment));
+            taskDTO.StaffId = staffDTO.Id;
+            AddHistoryEntry(new TasksServiceUpdateTaskStaffId(DateTime.Now, taskDTO.Id, temp.StaffId, staffDTO.Id));
+        }
+
+        public void UpdateTaskComment(TaskDTO oldTaskDTO, TaskDTO newTaskDTO)
+        {
+            FixTaskDTO(oldTaskDTO);
+            var temp = new TaskDTO(_repository.Get(oldTaskDTO.Id)) {Comment = newTaskDTO.Comment};
+            _repository.Update(temp.ToTaskDAL());
+            oldTaskDTO.Comment = newTaskDTO.Comment;
+            AddHistoryEntry(new TasksServiceUpdateTaskComment(DateTime.Now, oldTaskDTO.Id, temp.StaffId, newTaskDTO.Comment));
         }
 
         public IEnumerable<TaskDTO> GetAllTasks()
@@ -80,9 +101,10 @@ namespace Lab_6_BLL.Services
             return _repository.GetAll().Select(t => new TaskDTO(t));
         }
 
-        public TaskDTO GetTaskById(int taskId)
+        public TaskDTO GetTaskById(TaskDTO taskDTO)
         {
-            return new TaskDTO(_repository.Get(taskId));
+            FixTaskDTO(taskDTO);
+            return new TaskDTO(_repository.Get(taskDTO.Id));
         }
         
         public IEnumerable<TaskDTO> FindTasksByCreationDate(DateTime date)
@@ -117,18 +139,18 @@ namespace Lab_6_BLL.Services
             return tasks;
         }
 
-        public IEnumerable<TaskDTO> FindTasksByStaffId(int staffId)
+        public IEnumerable<TaskDTO> FindTasksByStaff(StaffDTO staffDTO)
         {
-            return GetAllTasks().Where(t => t.StaffId == staffId).ToList();
+            return GetAllTasks().Where(t => t.StaffId == staffDTO.Id).ToList();
         }
 
-        public IEnumerable<TaskDTO> FindTasksModifiedByStaffId(int staffId)
+        public IEnumerable<TaskDTO> FindTasksModifiedByStaff(StaffDTO staffDTO)
         {
             var tasks = new List<TaskDTO>();
             foreach (var (_, historyEntry) in _history)
             {
                 if (!(historyEntry is TasksServiceModifyTask modifyTask)) continue;
-                if (modifyTask.StaffId == staffId)
+                if (modifyTask.StaffId == staffDTO.Id)
                     tasks.Add(new TaskDTO(_repository.Get(modifyTask.TaskId)));
             }
 
@@ -140,23 +162,29 @@ namespace Lab_6_BLL.Services
             var tasks = new List<TaskDTO>();
             foreach (var staffId in mentor.SubordinatesId)
             {
-                tasks.AddRange(FindTasksByStaffId(staffId));
+                _staffService.TryGetTarget(out var staffService);
+                tasks.AddRange(FindTasksByStaff(staffService.GetById(staffId)));
             }
 
             return tasks;
         }
 
-        public IEnumerable<TaskDTO> FindTasksModifiedByStaffIdAndDate(int staffId, DateTime date)
+        public IEnumerable<TaskDTO> FindTasksModifiedByStaffAndDate(StaffDTO staffDTO, DateTime date)
         {
             var tasks = new List<TaskDTO>();
             foreach (var (_, historyEntry) in _history)
             {
                 if (!(historyEntry is TasksServiceModifyTask modifyTask)) continue;
-                if (modifyTask.StaffId == staffId && historyEntry.DateTime.Date == date.Date)
+                if (modifyTask.StaffId == staffDTO.Id && historyEntry.DateTime.Date == date.Date)
                     tasks.Add(new TaskDTO(_repository.Get(modifyTask.TaskId)));
             }
 
             return tasks;
+        }
+
+        public TaskDTO GetById(int taskId)
+        {
+            return new TaskDTO(_repository.Get(taskId));
         }
     }
 }

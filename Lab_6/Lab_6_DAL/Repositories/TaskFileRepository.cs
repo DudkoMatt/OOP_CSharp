@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Lab_6_DAL.Entities;
 using Lab_6_DAL.Exceptions;
 using Lab_6_DAL.Infrastructure;
@@ -8,8 +9,12 @@ namespace Lab_6_DAL.Repositories
 {
     public class TaskFileRepository : FileRepository<TaskDAL>
     {
+        private int _nextTaskId;
+
         public TaskFileRepository(string directoryPath) : base(directoryPath)
-        { }
+        {
+            _nextTaskId = GetMaxId() + 1;
+        }
 
         public override TaskDAL Get(int id)
         {
@@ -33,7 +38,7 @@ namespace Lab_6_DAL.Repositories
             return new TaskDAL(id, name, description, state, staffId, comment);
         }
 
-        public override void Create(TaskDAL item)
+        protected override void WriteToFile(TaskDAL item)
         {
             using var sw = File.CreateText($"{DirectoryPath}/{item.Id}.txt");
             sw.WriteLine(item.Name);
@@ -43,9 +48,28 @@ namespace Lab_6_DAL.Repositories
             sw.WriteLine(item.Comment);
         }
 
+        public override int Create(TaskDAL item)
+        {
+            item.Id = _nextTaskId;
+            WriteToFile(item);
+            return _nextTaskId++;
+        }
+
         public override void Update(TaskDAL item)
         {
-            Create(item);
+            WriteToFile(item);
+        }
+
+        public override void Fix(TaskDAL item)
+        {
+            var task = GetAll().First(t =>
+                t.Comment == item.Comment &&
+                t.Description == item.Description &&
+                t.Name == item.Name &&
+                t.State == item.State &&
+                t.StaffId == item.StaffId
+            );
+            item.Id = task.Id;
         }
     }
 }

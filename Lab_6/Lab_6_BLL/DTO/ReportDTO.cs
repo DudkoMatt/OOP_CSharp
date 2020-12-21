@@ -6,14 +6,14 @@ namespace Lab_6_BLL.DTO
 {
     public class ReportDTO
     {
-        public readonly int Id;
-        public readonly DateTime CreationDateTime;
-        public int StaffId;
-        public bool Finalised;
-        public List<int> ResolvedTasks;
+        public int Id { get; set; }
+        public DateTime CreationDateTime { get; set; }
+        public int StaffId { get; set; }
+        public bool Finalised { get; set; }
+        public List<int> ResolvedTasks { get; set; }
 
         // Id тасков, в которых в день создания совершены изменения
-        public List<int> ChangesTasksId;
+        public List<int> ChangesTasksId { get; set; }
 
         public ReportDTO(int id, DateTime dateTime, int staffId, bool finalised = false, List<int> resolvedTasks = null, List<int> changesId = null)
         {

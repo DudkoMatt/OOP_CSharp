@@ -11,24 +11,25 @@ namespace Lab_6_BLL.DTO
             Resolved
         }
         
-        public int Id { get; }
+        public int Id { get; set; }
 
-        public string Name { get; }
-        public string Description { get; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         
         public int StaffId { get; set; }
 
-        public TaskState State;
+        public TaskState State { get; set; }
         
         public string Comment { get; set; }
 
-        public TaskDTO(int id, string name, string description, TaskState state, int staffId)
+        public TaskDTO(int id, string name, string description, TaskState state, int staffId, string comment)
         {
             Id = id;
             Name = name;
             Description = description;
             State = state;
             StaffId = staffId;
+            Comment = comment;
         }
 
         public TaskDTO(TaskDAL taskDAL)

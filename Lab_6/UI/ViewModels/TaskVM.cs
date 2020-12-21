@@ -10,39 +10,37 @@ namespace Lab_6.UI.ViewModels
             Active,
             Resolved
         }
-        
-        public int Id { get; }
 
-        public string Name { get; }
-        public string Description { get; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         
-        public int StaffId { get; }
+        public int StaffId { get; set; }
 
-        public TaskState State;
+        public TaskState State { get; set; }
         
         public string Comment { get; set; }
 
-        public TaskVM(int id, string name, string description, TaskState state, int staffId)
+        public TaskVM(string name, string description, int staffId = -1, TaskState state = TaskState.Open, string comment = "")
         {
-            Id = id;
             Name = name;
             Description = description;
             State = state;
             StaffId = staffId;
+            Comment = comment;
         }
         
         public TaskVM(TaskDTO taskDTO)
         {
-            Id = taskDTO.Id;
             Name = taskDTO.Name;
             Description = taskDTO.Description;
             State = (TaskState) taskDTO.State;
             StaffId = taskDTO.StaffId;
+            Comment = taskDTO.Comment;
         }
 
         public TaskDTO ToTaskDTO()
         {
-            return new TaskDTO(Id, Name, Description, (TaskDTO.TaskState) State, StaffId);
+            return new TaskDTO(-1, Name, Description, (TaskDTO.TaskState) State, StaffId, Comment);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Lab_6.UI.ViewModels;
+using Lab_6_BLL.DTO;
 using Lab_6_BLL.Infrastructure;
 
 namespace Lab_6.UI
@@ -21,99 +22,42 @@ namespace Lab_6.UI
         
         public int CreateDailyReport(StaffVM staffVM)
         {
-            return _reportService.CreateDailyReport(staffVM.Id);
+            return _reportService.CreateDailyReport(staffVM.ToStaffDTO());
         }
 
         public void UpdateDailyReport(ReportVM reportVM)
         {
-            _reportService.UpdateDailyReport(reportVM.Id);
+            _reportService.UpdateDailyReport(reportVM.ToReportDTO());
         }
 
         public void MarkDailyReportFinalised(ReportVM reportVM)
         {
-            _reportService.MarkDailyReportFinalised(reportVM.Id);
+            _reportService.MarkDailyReportFinalised(reportVM.ToReportDTO());
         }
-
-        public ReportVM GetById(int reportId)
-        {
-            return new ReportVM(_reportService.GetById(reportId));
-        }
-
+        
         public IEnumerable<ReportVM> GetAllReports()
         {
             return _reportService.GetAllReports().Select(r => new ReportVM(r)).ToList();
         }
 
-        public int CreateSprintReport()
+        public int CreateStaff(StaffVM staffVM)
         {
-            return _reportService.CreateSprintReport();
+            return _staffService.CreateStaff(staffVM.ToStaffDTO());
         }
 
-        public void UpdateSprintReport()
+        public int CreateTask(TaskVM taskVM, StaffVM staffVM)
         {
-            _reportService.UpdateSprintReport();
-        }
-
-
-        public int CreateStaff(string name)
-        {
-            return _staffService.CreateStaff(name);
-        }
-
-        public IEnumerable<StaffVM> GetAllStaff()
-        {
-            return _staffService.GetAllStaff().Select(s => new StaffVM(s)).ToList();
-        }
-
-        public void SetMentorId(StaffVM staffVM, StaffVM mentorVM)
-        {
-            _staffService.SetMentorId(staffVM.Id, mentorVM.Id);
-        }
-
-        public int GetMentorId(StaffVM staffVM)
-        {
-            return _staffService.GetMentorId(staffVM.Id);
-        }
-
-        public void AddSubordinate(StaffVM staffVM, StaffVM subordinateVM)
-        {
-            _staffService.AddSubordinate(staffVM.Id, subordinateVM.Id);
-        }
-
-        public void RemoveSubordinate(StaffVM staffVM, StaffVM subordinateVM)
-        {
-            _staffService.RemoveSubordinate(staffVM.Id, subordinateVM.Id);
-        }
-
-
-        public int CreateTask(string name, string description, StaffVM staffVM)
-        {
-            return _tasksService.CreateTask(name, description, staffVM.Id);
+            return _tasksService.CreateTask(taskVM.ToTaskDTO(), staffVM.ToStaffDTO());
         }
 
         public void MarkTaskAsResolved(TaskVM taskVM)
         {
-            _tasksService.MarkTaskAsResolved(taskVM.Id);
+            _tasksService.MarkTaskAsResolved(taskVM.ToTaskDTO());
         }
 
-        public void MarkTaskAsOpen(TaskVM taskVM)
+        public void UpdateTaskComment(TaskVM oldTaskVM, TaskVM newTaskVM)
         {
-            _tasksService.MarkTaskAsOpen(taskVM.Id);
-        }
-
-        public void MarkTaskAsActive(TaskVM taskVM)
-        {
-            _tasksService.MarkTaskAsActive(taskVM.Id);
-        }
-
-        public void UpdateStaffIdInTask(TaskVM taskVM, StaffVM staffVM)
-        {
-            _tasksService.UpdateStaffIdInTask(taskVM.Id, staffVM.Id);
-        }
-
-        public void UpdateTaskComment(TaskVM taskVM)
-        {
-            _tasksService.UpdateTaskComment(taskVM.Id, taskVM.Comment);
+            _tasksService.UpdateTaskComment(oldTaskVM.ToTaskDTO(), newTaskVM.ToTaskDTO());
         }
 
         public IEnumerable<TaskVM> GetAllTasks()
@@ -121,39 +65,19 @@ namespace Lab_6.UI
             return _tasksService.GetAllTasks().Select(t => new TaskVM(t)).ToList();
         }
 
+        public StaffVM GetStaffById(int staffId)
+        {
+            return new StaffVM(_staffService.GetById(staffId));
+        }
+        
+        public ReportVM GetReportById(int reportId)
+        {
+            return new ReportVM(_reportService.GetById(reportId));
+        }
+        
         public TaskVM GetTaskById(int taskId)
         {
-            return new TaskVM(_tasksService.GetTaskById(taskId));
-        }
-
-        public IEnumerable<TaskVM> FindTasksByCreationDate(DateTime time)
-        {
-            return _tasksService.FindTasksByCreationDate(time).Select(t => new TaskVM(t)).ToList();
-        }
-
-        public IEnumerable<TaskVM> FindTasksByModificationDate(DateTime time)
-        {
-            return _tasksService.FindTasksByModificationDate(time).Select(t => new TaskVM(t)).ToList();
-        }
-
-        public IEnumerable<TaskVM> FindTasksByStaffId(StaffVM staffVM)
-        {
-            return _tasksService.FindTasksByStaffId(staffVM.Id).Select(t => new TaskVM(t)).ToList();
-        }
-
-        public IEnumerable<TaskVM> FindTasksModifiedByStaffId(StaffVM staffVM)
-        {
-            return _tasksService.FindTasksModifiedByStaffId(staffVM.Id).Select(t => new TaskVM(t)).ToList();
-        }
-
-        public IEnumerable<TaskVM> FindTasksModifiedByStaffIdAndDate(StaffVM staffVM, DateTime date)
-        {
-            return _tasksService.FindTasksModifiedByStaffIdAndDate(staffVM.Id, date).Select(t => new TaskVM(t)).ToList();
-        }
-
-        public IEnumerable<TaskVM> FindTasksByMentor(StaffVM mentorVM)
-        {
-            return _tasksService.FindTasksByMentor(mentorVM.ToStaffDTO()).Select(t => new TaskVM(t)).ToList();
+            return new TaskVM(_tasksService.GetById(taskId));
         }
     }
 }

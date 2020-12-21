@@ -4,14 +4,14 @@ namespace Lab_6_DAL.Entities
 {
     public class TaskDAL : IEntity
     {
-        public int Id { get; }
+        public int Id { get; set; }
 
-        public string Name { get; }
-        public string Description { get; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         
         public int StaffId { get; set; }
 
-        public int State;
+        public int State { get; set; }
         
         public string Comment { get; set; }
         
