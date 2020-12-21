@@ -79,5 +79,15 @@ namespace Lab_6.UI
         {
             return new TaskVM(_tasksService.GetById(taskId));
         }
+
+        public int CreateSprintReport()
+        {
+            return _reportService.CreateSprintReport();
+        }
+
+        public void UpdateSprintReport()
+        {
+            _reportService.UpdateSprintReport();
+        }
     }
 }

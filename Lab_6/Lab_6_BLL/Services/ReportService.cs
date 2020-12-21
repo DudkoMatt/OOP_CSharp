@@ -67,32 +67,38 @@ namespace Lab_6_BLL.Services
         {
             return _repository.GetAll().Select(t => new ReportDTO(t));
         }
-
         
         public int CreateSprintReport()
         {
             // Он не отличается от создания дневного, кроме того, что принадлежит директору == корню
-            throw new NotImplementedException();
-            /*_sprintReportId = CreateDailyReport(TODO);
-            return _sprintReportId;*/
+            _sprintReportId = CreateDailyReport(_staffService.GetById(0));
+            return _sprintReportId;
         }
         
         public void UpdateSprintReport()
         {
-            // ToDO
-            throw new NotImplementedException();
-            /*
             // Вызовем UpdateDailyReport для всех отчетов
             foreach (var reportDTO in GetAllReports())
             {
-                UpdateDailyReport(TODO);
+                UpdateDailyReport(reportDTO);
+            }
+
+            var sprintReport = new ReportDTO(_repository.Get(_sprintReportId));
+
+            foreach (var reportDTO in GetAllReports())
+            {
+                var staff = _staffService.GetById(reportDTO.StaffId);
+            
+                sprintReport.ChangesTasksId.AddRange(_tasksService.FindTasksModifiedByStaffAndDate(staff, DateTime.Now)
+                    .Select(taskDTO => taskDTO.Id).Distinct().ToList());
+            
+                foreach (var taskId in _tasksService.GetAllTasks().Where(t => t.State == TaskDTO.TaskState.Resolved && t.StaffId == staff.Id).Select(t => t.Id))
+                {
+                    sprintReport.AddResolveTask(taskId);
+                }
             }
             
-            // ToDO: abracadabra -> Projiekt Reparo!
-            
-            UpdateDailyReport(TODO);
-            // ToDO: work with staff
-            */
+            _repository.Update(sprintReport.ToReportDAL());
         }
 
         public ReportDTO GetById(int reportId)

@@ -82,10 +82,30 @@ namespace Lab_6
             report2 = userInterfaceController.GetReportById(reportId2);
             userInterfaceController.MarkDailyReportFinalised(report2);
 
+            var sprintReportId = userInterfaceController.CreateSprintReport();
+            userInterfaceController.UpdateSprintReport();
+            userInterfaceController.MarkDailyReportFinalised(userInterfaceController.GetReportById(sprintReportId));
+
             // ---------------------------------------------------------------------------------------------------------
             
             // Вывод после всех изменений:
             report = userInterfaceController.GetReportById(reportId);
+            Console.WriteLine("Состояние отчета:");
+            Console.WriteLine($"Finalised: {report.Finalised}");
+            Console.Write("Resolved taskId: ");
+            foreach (var resolvedTaskId in report.ResolvedTasks)
+            {
+                Console.Write($"{resolvedTaskId} ");
+            }
+            Console.WriteLine();
+            Console.WriteLine($"StaffId: {report.StaffId}");
+            Console.WriteLine($"CreationDateTime: {report.CreationDateTime}");
+            
+            // ---------------------------------------------------------------------------------------------------------
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine("Sprint report:");
+            report = userInterfaceController.GetReportById(sprintReportId);
             Console.WriteLine("Состояние отчета:");
             Console.WriteLine($"Finalised: {report.Finalised}");
             Console.Write("Resolved taskId: ");
